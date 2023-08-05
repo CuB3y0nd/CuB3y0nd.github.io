@@ -329,9 +329,9 @@ buildFuture = true
       # FixIt 0.2.17 | NEW identifier of avatar menu link
       avatarMenu = "/posts/"
       # FixIt 0.2.7 | CHANGED title shown in home page (HTML format is supported)
-      title = "路虽远，行则将至"
+      title = ""
       # subtitle shown in home page
-      subtitle = ""
+      subtitle = "路虽远，行则将至"
       # whether to use typeit animation for subtitle
       typeit = true
       # whether to show social links
