@@ -259,7 +259,7 @@ buildFuture = true
     # FixIt 0.2.0 | NEW whether to show the author
     author = true
     # Site creation year
-    since = "2023"
+    since = "2022"
     # FixIt 0.2.14 | NEW whether to show total word count of site content
     wordCount = true
     # FixIt 0.2.12 | NEW Public network security only in China (HTML format is supported)
@@ -274,7 +274,7 @@ buildFuture = true
       animate = true
       icon = "fa-solid fa-heartbeat"
       pre = ""
-      value = "2023-08-04T12:00:00+08:00" # e.g. "2021-12-18T16:15:22+08:00"
+      value = "2022-10-01T12:00:00+08:00" # e.g. "2021-12-18T16:15:22+08:00"
     # FixIt 0.2.17 | NEW footer lines order, optional values: ["first", 0, 1, 2, 3, 4, 5, "last"]
     [params.footer.order]
       powered = 1
@@ -498,7 +498,7 @@ buildFuture = true
       closeComment = false
     # FixIt 0.2.16 | CHANGED KaTeX mathematical formulas (https://katex.org)
     [params.page.math]
-      enable = false
+      enable = true
       # default inline delimiter is $ ... $ and \( ... \)
       inlineLeftDelimiter = ""
       inlineRightDelimiter = ""
