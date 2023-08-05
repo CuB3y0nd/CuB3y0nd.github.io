@@ -11,54 +11,128 @@
 baseURL = "https://www.cubeyond.net"
 languageCode = "zh-CN"
 defaultContentLanguage = "zh-cn"
-hasCJKLanguage = true
 title = "CuB3y0nd's Blog"
 theme = "FixIt"
 
+hasCJKLanguage = true
 buildFuture = true
 
-[menu]
-  [[menu.main]]
-    identifier = "posts"
-    # you can add extra information before the name (HTML format is supported), such as icons
-    pre = ""
-    # you can add extra information after the name (HTML format is supported), such as icons
-    post = ""
-    name = "文章"
-    url = "/posts/"
-    # title will be shown when you hover on this menu link
-    title = ""
+[languages]
+  [languages.zh-cn]
     weight = 1
-    # FixIt 0.2.14 | NEW add user-defined content to menu items
-    [menu.main.params]
-      # add css class to a specific menu item
-      class = ""
-      # whether set as a draft menu item whose function is similar to a draft post/page
-      draft = false
-      # FixIt 0.2.16 | NEW add fontawesome icon to a specific menu item
-      icon = "fa-solid fa-archive"
-      # FixIt 0.2.16 | NEW set menu item type, optional values: ["mobile", "desktop"]
-      type = ""
-  [[menu.main]]
-    identifier = "categories"
-    pre = ""
-    post = ""
-    name = "分类"
-    url = "/categories/"
-    title = ""
+    title = "CuB3y0nd's Blog"
+    languageCode = "zh-CN"
+    languageName = "简体中文"
+    hasCJKLanguage = true
+    [[languages.zh-cn.menu.main]]
+      identifier = "posts"
+      # you can add extra information before the name (HTML format is supported), such as icons
+      pre = ""
+      # you can add extra information after the name (HTML format is supported), such as icons
+      post = ""
+      name = "文章"
+      url = "/posts/"
+      # title will be shown when you hover on this menu link
+      title = ""
+      weight = 1
+      # FixIt 0.2.14 | NEW add user-defined content to menu items
+      [languages.zh-cn.menu.main.params]
+        # add css class to a specific menu item
+        class = ""
+        # whether set as a draft menu item whose function is similar to a draft post/page
+        draft = false
+        # FixIt 0.2.16 | NEW add fontawesome icon to a specific menu item
+        icon = "fa-solid fa-archive"
+        # FixIt 0.2.16 | NEW set menu item type, optional values: ["mobile", "desktop"]
+        type = ""
+    [[languages.zh-cn.menu.main]]
+      identifier = "categories"
+      pre = ""
+      post = ""
+      name = "分类"
+      url = "/categories/"
+      title = ""
+      weight = 2
+      [languages.zh-cn.menu.main.params]
+        icon = "fa-solid fa-th"
+    [[languages.zh-cn.menu.main]]
+      identifier = "tags"
+      pre = ""
+      post = ""
+      name = "标签"
+      url = "/tags/"
+      title = ""
+      weight = 3
+      [languages.zh-cn.menu.main.params]
+        icon = "fa-solid fa-tags"
+    [[languages.zh-cn.menu.main]]
+      identifier = "about"
+      pre = ""
+      post = ""
+      name = "关于"
+      url = "/about/"
+      title = ""
+      weight = 4
+      [languages.zh-cn.menu.main.params]
+        icon = "fa-solid fa-circle-info"
+
+  [languages.en]
     weight = 2
-    [menu.main.params]
-      icon = "fa-solid fa-th"
-  [[menu.main]]
-    identifier = "tags"
-    pre = ""
-    post = ""
-    name = "标签"
-    url = "/tags/"
-    title = ""
-    weight = 3
-    [menu.main.params]
-      icon = "fa-solid fa-tags"
+    title = "CuB3y0nd's Blog"
+    languageCode = "en"
+    languageName = "English"
+    [[languages.en.menu.main]]
+      identifier = "posts"
+      # you can add extra information before the name (HTML format is supported), such as icons
+      pre = ""
+      # you can add extra information after the name (HTML format is supported), such as icons
+      post = ""
+      name = "Posts"
+      url = "/posts/"
+      # title will be shown when you hover on this menu link
+      title = ""
+      weight = 1
+      # FixIt 0.2.14 | NEW add user-defined content to menu items
+      [languages.en.menu.main.params]
+        # add css class to a specific menu item
+        class = ""
+        # whether set as a draft menu item whose function is similar to a draft post/page
+        draft = false
+        # FixIt 0.2.16 | NEW add fontawesome icon to a specific menu item
+        icon = "fa-solid fa-archive"
+        # FixIt 0.2.16 | NEW set menu item type, optional values: ["mobile", "desktop"]
+        type = ""
+    [[languages.en.menu.main]]
+      identifier = "categories"
+      pre = ""
+      post = ""
+      name = "Categories"
+      url = "/categories/"
+      title = ""
+      weight = 2
+      [languages.en.menu.main.params]
+        icon = "fa-solid fa-th"
+    [[languages.en.menu.main]]
+      identifier = "tags"
+      pre = ""
+      post = ""
+      name = "Tags"
+      url = "/tags/"
+      title = ""
+      weight = 3
+      [languages.en.menu.main.params]
+        icon = "fa-solid fa-tags"
+    [[languages.en.menu.main]]
+      identifier = "about"
+      pre = ""
+      post = ""
+      name = "About"
+      url = "/about/"
+      title = ""
+      weight = 4
+      [languages.en.menu.main.params]
+        icon = "fa-solid fa-circle-info"
+
 
 # -------------------------------------------------------------------------------------
 # Theme Core Configuration
@@ -71,14 +145,14 @@ buildFuture = true
   # site description
   description = "CuB3y0nd's Blog"
   # site keywords
-  keywords = ["CuB3y0nd", "PWN"]
+  keywords = ["CuB3y0nd", "PWN", "BinaryEXP", "Binary Exploitation", "Reverse Engineering", "RCE", "Buffer Overflow", "ROP", "ROP Emporium"]
   # site default theme ["light", "dark", "auto"]
   defaultTheme = "auto"
   # public git repo url only then enableGitInfo is true
   gitRepo = ""
   # FixIt 0.1.1 | NEW which hash function used for SRI, when empty, no SRI is used
   # ["sha256", "sha384", "sha512", "md5"]
-  fingerprint = ""
+  fingerprint = "sha256"
   # FixIt 0.2.0 | NEW date format
   dateFormat = "2006-01-02"
   # website images for Open Graph and Twitter Cards
@@ -86,7 +160,7 @@ buildFuture = true
   # FixIt 0.2.12 | NEW enable PWA
   enablePWA = false
   # FixIt 0.2.14 | NEW whether to add external Icon for external links automatically
-  externalIcon = false
+  externalIcon = true
   # FixIt 0.2.14 | NEW FixIt will, by default, inject a theme meta tag in the HTML head on the home page only.
   # You can turn it off, but we would really appreciate if you don’t, as this is a good way to watch FixIt's popularity on the rise.
   disableThemeInject = true
@@ -94,7 +168,7 @@ buildFuture = true
   # FixIt 0.2.0 | NEW App icon config
   [params.app]
     # optional site title override for the app when added to an iOS home screen or Android launcher
-    title = "FixIt"
+    title = "CuB3y0nd"
     # whether to omit favicon resource links
     noFavicon = false
     # modern SVG favicon to use in place of older style .png and .ico files
@@ -112,11 +186,11 @@ buildFuture = true
   [params.search]
     enable = true
     # type of search engine ["lunr", "algolia", "fuse"]
-    type = "lunr"
+    type = "fuse"
     # max index length of the chunked content
     contentLength = 4000
     # placeholder of the search bar
-    placeholder = "搜索文章标题或内容..."
+    placeholder = ""
     # FixIt 0.2.1 | NEW max number of results length
     maxResultLength = 10
     # FixIt 0.2.3 | NEW snippet length of the result
@@ -133,12 +207,12 @@ buildFuture = true
       # FixIt 0.2.17 | NEW https://fusejs.io/api/options.html
       isCaseSensitive = false
       minMatchCharLength = 2
-      findAllMatches = false
+      findAllMatches = true
       location = 0
       threshold = 0.3
       distance = 100
       ignoreLocation = false
-      useExtendedSearch = false
+      useExtendedSearch = true
       ignoreFieldNorm = false
 
   # Header config
@@ -168,8 +242,8 @@ buildFuture = true
 
   # FixIt 0.2.18 | NEW Breadcrumb config
   [params.breadcrumb]
-    enable = false
-    sticky = false
+    enable = true
+    sticky = true
     showHome = false
 
   # Footer config
@@ -200,7 +274,7 @@ buildFuture = true
       animate = true
       icon = "fa-solid fa-heartbeat"
       pre = ""
-      value = "2023-08-04T20:00:00+08:00" # e.g. "2021-12-18T16:15:22+08:00"
+      value = "2023-08-04T12:00:00+08:00" # e.g. "2021-12-18T16:15:22+08:00"
     # FixIt 0.2.17 | NEW footer lines order, optional values: ["first", 0, 1, 2, 3, 4, 5, "last"]
     [params.footer.order]
       powered = 1
@@ -239,7 +313,7 @@ buildFuture = true
     min = 14 # Minimum font size in px
     max = 32 # Maximum font size in px
     peakCount = 10 # Maximum count of posts per tag
-    orderby = "name" # Order of tags, optional values: ["name", "count"]
+    orderby = "count" # Order of tags, optional values: ["name", "count"]
 
   # Home page config
   [params.home]
@@ -277,7 +351,7 @@ buildFuture = true
     Twitter = "CuB3y0nd"
     Instagram = ""
     Facebook = ""
-    Telegram = ""
+    Telegram = "CuB3y0nd"
     Medium = ""
     Gitlab = ""
     Youtubelegacy = ""
@@ -291,7 +365,7 @@ buildFuture = true
     Codepen = ""
     FreeCodeCamp = ""
     Bitbucket = ""
-    Stackoverflow = ""
+    Stackoverflow = "CuB3y0nd"
     Weibo = ""
     Odnoklassniki = ""
     VK = ""
@@ -372,7 +446,7 @@ buildFuture = true
     twemoji = false
     # whether to enable lightgallery
     # FixIt 0.2.18 | CHANGED if set to "force", images in the content will be forced to shown as the gallery.
-    lightgallery = false
+    lightgallery = "force"
     # FixIt 0.2.0 | NEW whether to enable the ruby extended syntax
     ruby = true
     # FixIt 0.2.0 | NEW whether to enable the fraction extended syntax
@@ -424,7 +498,7 @@ buildFuture = true
       closeComment = false
     # FixIt 0.2.16 | CHANGED KaTeX mathematical formulas (https://katex.org)
     [params.page.math]
-      enable = true
+      enable = false
       # default inline delimiter is $ ... $ and \( ... \)
       inlineLeftDelimiter = ""
       inlineRightDelimiter = ""
@@ -489,7 +563,7 @@ buildFuture = true
       Whatsapp = false
       Pinterest = false
       Tumblr = false
-      HackerNews = false
+      HackerNews = true
       Reddit = true
       VK = false
       Buffer = false
@@ -816,7 +890,7 @@ buildFuture = true
     enable = true
     # All available colors:
     # ["black", "blue", "green", "orange", "pink", "purple", "red", "silver", "white", "yellow"]
-    color = "blue"
+    color = "black"
     # All available themes:
     # ["barber-shop", "big-counter", "bounce", "center-atom", "center-circle", "center-radar", "center-simple",
     # "corner-indicator", "fill-left", "flash", "flat-top", "loading-bar", "mac-osx", "material", "minimal"]

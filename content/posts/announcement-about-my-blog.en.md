@@ -1,5 +1,5 @@
 ---
-title: "[置顶] 博客站点说明"
+title: "[Pinned] About my blog site"
 subtitle:
 date: 2023-08-05T07:04:28+08:00
 draft: false
@@ -25,20 +25,20 @@ resources:
     src: featured-image.jpg
   - name: featured-image-preview
     src: featured-image-preview.jpg
-toc: true
+toc: false
 math: false
 lightgallery: false
 password:
 message:
 repost:
-  enable: true
+  enable: false
   url:
 
 # See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
 ---
 
-> 关于本博客
+> About my blog site
 
 <!--more-->
 
-暂无公告
+No announcement yet :D
