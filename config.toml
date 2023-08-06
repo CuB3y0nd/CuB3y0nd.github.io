@@ -880,8 +880,8 @@ buildFuture = true
     # Available values: ["top", "bottom"]
     position = "top"
     reversed = false
-    light = ""
-    dark = ""
+    light = "black"
+    dark = "white"
     height = "2px"
   
   # FixIt 0.2.17 | NEW Progress bar in the top during page loading.

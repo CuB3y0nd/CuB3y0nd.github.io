@@ -41,4 +41,6 @@ repost:
 
 <!--more-->
 
-No announcement yet :D
+Although my blog provides multilingual support, because I don't have too much time,
+I may rarely write articles in the second language. If you are interested in my blog
+and want more people read it easily, you can submit translate PR. Thank!
