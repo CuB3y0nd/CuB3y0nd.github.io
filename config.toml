@@ -739,8 +739,8 @@ buildFuture = true
       images = []
       # Publisher info
       [params.page.seo.publisher]
-        name = ""
-        logoUrl = ""
+        name = "CuB3y0nd"
+        logoUrl = "/logo.svg"
 
   # FixIt 0.2.5 | NEW TypeIt config
   [params.typeit]
