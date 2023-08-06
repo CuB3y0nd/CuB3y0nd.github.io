@@ -33,8 +33,6 @@ message:
 repost:
   enable: false
   url:
-
-# See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
 ---
 
 **<center><font color='red'>本文只作技术交流分享研究之用，请勿用于非法用途，否则后果自负！</font></center>**
