@@ -224,7 +224,7 @@ buildFuture = true
     # FixIt 0.2.0 | NEW Header title config
     [params.header.title]
       # URL of the LOGO
-      logo = "/fixit.min.svg"
+      logo = "/logo.svg"
       # title name
       name = "CuB3y0nd's Blog"
       # you can add extra information before the name (HTML format is supported), such as icons
