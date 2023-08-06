@@ -11,7 +11,7 @@ author:
 description:
 keywords:
 license:
-comment: false
+comment: true
 weight: 0
 tags:
   - draft
@@ -27,11 +27,11 @@ resources:
     src: featured-image-preview.jpg
 toc: true
 math: false
-lightgallery: false
+lightgallery: true
 password:
 message:
 repost:
-  enable: true
+  enable: false
   url:
 
 # See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
