@@ -719,7 +719,7 @@ buildFuture = true
         emitMetadata = "1"
         inputPosition = "top" # ["top", "bottom"]
         lightTheme = "light"
-        darkTheme = "dark"
+        darkTheme = "dark_dimmed"
         lazyLoad = true
     # FixIt 0.2.7 | NEW Third-party library config
     [params.page.library]
