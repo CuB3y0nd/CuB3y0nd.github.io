@@ -15,6 +15,7 @@ comment: true
 weight: 0
 tags:
   - PWN
+  - Stack
 categories:
   - PWN
 hiddenFromHomePage: false
