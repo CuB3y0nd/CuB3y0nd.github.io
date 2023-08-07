@@ -43,7 +43,7 @@ repost:
 当调用一个新函数时，被调用函数的内存地址被压入栈——这样，程序就知道被调用函数
 执行完成后应该返回到哪里。让我们看一个基本的二进制文件来展示这一点。
 
-{{< link href="blob:https://github.com/f60d56f7-7117-45f4-b185-3016b5baea2a" content="introduction.zip" card=true >}}
+{{< link href="/pwn_assets/introduction.zip" content="introduction.zip" title="Download introduction.zip" download="introduction.zip" card=true >}}
 
 <!--more-->
 
