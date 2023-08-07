@@ -61,7 +61,7 @@ EIP 寄存器 并不位于栈上，因此不会被直接覆盖。
 
 这可以通过简单的试验和错误找到。我们可以发送可变数量的字符，
 将 `Segmentation Fault` 消息和 radare2 结合使用，来判断我们何时覆盖
-了 EIP 。有一种比简单的暴力破解更好的方法（我们将在下一篇文章中介绍这一点），
+了 EIP 。有一种比简单的暴力破解更好的方法：[德布鲁因（De Bruijn）序列](https://www.cubeyond.net/de-bruijn-sequences/)，
 为了方便起见，现在我们直接使用已经计算出的溢出 Padding。
 
 {{<admonition type="info">}}
