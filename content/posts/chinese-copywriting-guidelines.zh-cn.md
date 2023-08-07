@@ -31,13 +31,11 @@ lightgallery: false
 password:
 message:
 repost:
-  enable: false
-  url:
+  enable: true
+  url: "https://github.com/sparanoid/chinese-copywriting-guidelines/blob/master/README.zh-Hans.md"
 ---
 
 统一中文文案、排版的相关用法，降低团队成员之间的沟通成本，增强网站气质。
-
-本文转自 [sparanoid/chinese-copywriting-guidelines](https://github.com/sparanoid/chinese-copywriting-guidelines)。
 
 <!--more-->
 

@@ -31,13 +31,11 @@ lightgallery: false
 password:
 message:
 repost:
-  enable: false
-  url:
+  enable: true
+  url: "https://github.com/sparanoid/chinese-copywriting-guidelines/blob/master/README.en.md"
 ---
 
 Chinese copywriting guidelines for better written communication.
-
-Repost from: [sparanoid/chinese-copywriting-guidelines](https://github.com/sparanoid/chinese-copywriting-guidelines)。
 
 <!--more-->
 

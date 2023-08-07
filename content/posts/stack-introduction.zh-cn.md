@@ -1,5 +1,5 @@
 ---
-title: 栈介绍
+title: 二进制漏洞利用简介
 subtitle:
 date: 2023-08-07T17:26:49+08:00
 draft: false
@@ -47,7 +47,7 @@ repost:
 
 <!--more-->
 
-## 分析
+## 0x01 分析
 
 该压缩包有两个文件 —— `source.c` 和 `vuln`；后者是 `ELF` 文件，是 Linux 的
 可执行文件格式。
@@ -55,7 +55,7 @@ repost:
 这里将使用 `radare2` 来分析调用函数时二进制文件的行为。
 
 ```bash
-r2 -d -A ./vuln
+$ r2 -d -A ./vuln
 ```
 
 `-d` 调试可执行文件</br>
@@ -64,7 +64,7 @@ r2 -d -A ./vuln
 我们可以反汇编 `main` 函数：
 
 ```bash
-s main; pdf
+$ s main; pdf
 ```
 
 `s main` 用于定位（跳转）到 `main` 函数，而 `pdf` 表示 反汇编（**P**rint **D**isassemble **F**unction）。
@@ -84,7 +84,7 @@ s main; pdf
 对 `unsafe` 的调用位于 `0x080491bb`，我们可以在那里设一个断点。
 
 ```bash
-db 0x080491bb
+$ db 0x080491bb
 ```
 
 `db` 表示 **d**ebug **b**reakpoint，设置断点。断点的作用是在到达时暂停程序的执行以便
@@ -126,7 +126,7 @@ db 0x080491bb
 不难发现，这里其实是调用了 `unsafe` 之后的指令。这说明了程序是如何知道 `unsafe()`
 执行完成后应该返回到哪里的。
 
-## 漏洞
+## 0x02 漏洞
 
 现在让我们看看如何破解这个程序。首先，我们反汇编 `unsafe` 并在 `ret` 指令处进行中断；
 `ret` 相当于 `pop eip`，它将把我们刚才分析的栈上保存的返回指针 `0x080491c0` 压入
@@ -202,7 +202,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 {{</admonition>}}
 
-## 总结
+## 0x03 总结
 
 当一个函数调用另一个函数时：
 
