@@ -1,7 +1,7 @@
 ---
 title: Chinese Copywriting Guidelines
 subtitle:
-date: 2023-08-07T03:35:50+08:00
+date: 2023-08-06T03:35:50+08:00
 draft: false
 author:
   name: CuB3y0nd

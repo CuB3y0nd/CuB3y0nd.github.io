@@ -293,8 +293,8 @@ buildFuture = true
     rss = 10
     # FixIt 0.2.13 | NEW recently updated posts settings
     [params.section.recentlyUpdated]
-      enable = true
-      rss = true
+      enable = false
+      rss = false
       days = 30
       maxCount = 10
 
