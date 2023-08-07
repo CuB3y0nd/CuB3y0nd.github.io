@@ -40,9 +40,9 @@ repost:
 之前的偏移量变得更加简单：我们只需传入 De Bruijn 序列，获取 EIP 中的值并找到
 序列中的 **一个可能的匹配** 来计算偏移量。这里将在 **ret2win** 二进制文件上执行此操作。
 
-{{< link href="/pwn_assets/ret2win.zip" content="ret2win.zip" title="Download ret2win.zip" download="ret2win.zip" card=true >}}
-
 <!--more-->
+
+{{< link href="/pwn_assets/ret2win.zip" content="ret2win.zip" title="Download ret2win.zip" download="ret2win.zip" card=true >}}
 
 ## 0x01 生成序列
 
