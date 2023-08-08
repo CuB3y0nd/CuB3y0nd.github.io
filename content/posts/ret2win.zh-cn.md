@@ -262,7 +262,7 @@ TypeError: can only concatenate str (not "bytes") to str
 
 ## 0x08 最终的 Exploit 脚本
 
-```python
+```python {title="exp.py"}
 from pwn import *
 
 # 创建一个新进程
