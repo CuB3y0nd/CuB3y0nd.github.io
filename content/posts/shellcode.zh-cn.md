@@ -60,7 +60,7 @@ shellcode 成功的原因是 [冯·诺伊曼结构](https://zh.wikipedia.org/wik
 ## 0x01 禁用 ASLR
 
 ASLR 是一种安全技术，虽然它不是专门为对抗 shellcode 而设计的，但它涉及随机化
-内存的某些方面（我们稍后将更详细地讨论它）。这种随机化可能会使我们的 shellcode
+内存的某些方面，可以看我的这篇博客：[NOPs](https://www.cubeyond.net/nops/) 。这种随机化可能会使我们的 shellcode
 变得不可靠，所以我们现在将 [禁用](https://askubuntu.com/questions/318315/how-can-i-temporarily-disable-aslr-address-space-layout-randomization) 它。
 
 ```bash
