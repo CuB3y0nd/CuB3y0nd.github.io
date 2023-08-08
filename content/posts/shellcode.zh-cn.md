@@ -42,6 +42,8 @@ repost:
 **Shellcode** 本质上是 **汇编指令**，一旦我们将它输入到二进制文件中，它就会覆盖
 返回指针以劫持代码，指向并执行我们自己的指令。
 
+<!--more-->
+
 {{<admonition type="warning">}}
 
 我保证你可以相信我，但你永远不应该在不知道 shellcode 作用的情况下运行它。
@@ -52,8 +54,6 @@ Pwntools 很安全，并且几乎拥有你需要的所有 shellcode。
 Shellcode 成功的原因是 [冯·诺伊曼结构](https://zh.wikipedia.org/wiki/%E5%86%AF%C2%B7%E8%AF%BA%E4%BC%8A%E6%9B%BC%E7%BB%93%E6%9E%84)（当今大多数计算机使用的体系结构）不区分
 数据和指令——无论你告诉它在哪里运行或运行什么内容，它都会尝试运行它。因此，
 即使我们输入的是攻击指令，计算机也不知道这一点，我们可以利用它来发挥我们的优势。
-
-<!--more-->
 
 {{< link href="/pwn_assets/shellcode.zip" content="shellcode.zip" title="Download shellcode.zip" download="shellcode.zip" card=true >}}
 
