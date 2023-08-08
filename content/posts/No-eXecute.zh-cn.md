@@ -63,6 +63,8 @@ RELRO         STACK CANARY    NX          PIE    RPATH    RUNPATH    Symbols    
 Partial RELRO No canary found NX disabled No PIE No RPATH No RUNPATH 67 Symbols No      0         1           vuln
 ```
 
+</br>
+
 ```bash
 $ rabin2 -I vuln
 [...]
