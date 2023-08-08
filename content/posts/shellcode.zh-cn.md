@@ -175,7 +175,7 @@ p.interactive()
 
 {{<admonition type="warning">}}
 
-如果你收到 `EOFError`，请打印出 shellcode 并尝试在内存中查找它。
+如果你遇到 `EOFError`，请打印出 shellcode 并尝试在内存中查找它。
 栈地址可能是错误的。
 
 你可以参考这篇 [博客](https://www.cubeyond.net/ret2win/) 中的方法来解决这个问题。
