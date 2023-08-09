@@ -54,7 +54,7 @@ repost:
 
 这里将使用 `radare2` 来分析调用函数时二进制文件的行为。
 
-```bash
+```
 $ r2 -d -A ./vuln
 ```
 
@@ -63,7 +63,7 @@ $ r2 -d -A ./vuln
 
 我们可以反汇编 `main` 函数：
 
-```bash
+```
 $ s main; pdf
 ```
 
@@ -83,7 +83,7 @@ $ s main; pdf
 
 对 `unsafe` 的调用位于 `0x080491bb`，我们可以在那里设一个断点。
 
-```bash
+```
 $ db 0x080491bb
 ```
 
@@ -93,7 +93,7 @@ $ db 0x080491bb
 
 它应该在调用 `unsafe` 之前暂停；现在我们来分析一下栈顶：
 
-```bash
+```
 [0x080491ab]> pxw @ esp
 0xffcac570  0x00000000        [...]
 ```
@@ -108,7 +108,7 @@ $ db 0x080491bb
 第一个地址 `0xffcac570` 是位置；`0x00000000` 是该位置的值。让我们用 `ds`，**d**ebug **s**tep，
 步入指令，并再次检查栈顶。
 
-```bash
+```
 [0x08049172]> pxw @ esp
 0xffcac56c  0x080491c0 0x00000000
 ```
@@ -143,7 +143,7 @@ $ db 0x080491bb
 
 现在让我们继续将一堆字符发送到输入中，看看这会对它有什么影响：
 
-```bash
+```
 [0x08049172]> db 0x080491aa
 [0x08049172]> dc
 Overflow me
@@ -152,7 +152,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 现在让我们读取返回指针之前所在位置的值，我们看到它是 `0xffcac56c` 。
 
-```bash
+```
 [0x080491aa]> pxw @ 0xffcac56c
 0xffcac56c  0x41414141 0x41414141 0x41414141 0x41414141  AAAAAAAAAAAAAAAA
 ```
@@ -166,7 +166,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 我们可以用 `ds` 确认。
 
-```bash
+```
 [0x080491aa]> ds
 [0x41414141]>
 ```
@@ -174,7 +174,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 下一条将要执行的指令的位置变成了：`0x41414141`。让我们运行 `dr eip` 以确保
 `0x41414141` 是 `eip` 中的值：
 
-```bash
+```
 [0x41414141]> dr eip
 0x41414141
 ```
@@ -182,7 +182,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 我们已经成功劫持了程序的执行流程！让我们试试当我们用 `dc` 继续运行时，
 它是否会崩溃。
 
-```bash
+```
 [0x41414141]> dc
 [+] SIGNAL 11 errno=0 addr=0x41414141 code=1 si_pid=1094795585 ret=0
 ```

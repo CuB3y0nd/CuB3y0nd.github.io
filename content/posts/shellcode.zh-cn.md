@@ -86,7 +86,7 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 使用 `radare2` 调试 `vuln()` ，并找出缓冲区在内存中的起始位置；这就是我们
 想要将返回地址指向的位置。
 
-```bash
+```
 $ r2 -d -A ./vuln
 
 [0xf7fe3fd0]> s sym.unsafe; pdf
@@ -98,7 +98,7 @@ $ r2 -d -A ./vuln
 打印出来的这个值是一个 **局部变量**。根据它的大小，可以判断出它很可能是缓冲区。
 让我们在 `gets()` 之后设置一个断点并找到确切的返回地址。
 
-```bash
+```
 [0x08049172]> db 0x080491a8
 [0x08049172]> dc
 Overflow me
@@ -117,7 +117,7 @@ INFO: hit breakpoint at: 0x80491a8
 
 现在我们需要计算溢出 Padding 。我们将使用 De Bruijn 序列，如上一篇博客文章中所述。
 
-```bash
+```
 $ ragg2 -r -P 500
 <COPY THIS>
 
@@ -182,7 +182,7 @@ p.interactive()
 
 {{</admonition>}}
 
-```bash
+```
 $ python3 exp.py
 [*] 'vuln'
     Arch:     i386-32-little

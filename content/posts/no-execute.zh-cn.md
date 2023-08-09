@@ -57,7 +57,7 @@ Windows 版本的 NX 是 DEP（**D**ata **E**xecution **P**revention），数据
 
 你可以使用 `checksec` 或 `rabin2` 来检查 NX 的状态：
 
-```bash
+```
 $ checksec --file=vuln
 RELRO         STACK CANARY    NX          PIE    RPATH    RUNPATH    Symbols    FORTIFY Fortified Fortifiable FILE
 Partial RELRO No canary found NX disabled No PIE No RPATH No RUNPATH 67 Symbols No      0         1           vuln
@@ -65,7 +65,7 @@ Partial RELRO No canary found NX disabled No PIE No RPATH No RUNPATH 67 Symbols 
 
 </br>
 
-```bash
+```
 $ rabin2 -I vuln
 [...]
 nx       false

