@@ -2,7 +2,7 @@
 title: 调用约定
 subtitle: 更深入地了解 32-bit 和 64-bit 程序的参数
 date: 2023-08-08T22:16:36+08:00
-draft: false
+draft: true
 author:
   name: CuB3y0nd
   link:
@@ -40,11 +40,13 @@ repost:
 
 <!--more-->
 
+## 单个参数
+
 {{< link href="/pwn_assets/calling-conventions-one-param.zip" content="calling-conventions-one-param.zip" title="Download calling-conventions-one-param.zip" download="calling-conventions-one-param.zip" card=true >}}
 
-## 源码
+### 0x01 源码
 
-让我们快速浏览一下源码：
+我们先快速浏览一下源码：
 
 ```c {title="source.c"}
 #include <stdio.h>
@@ -70,9 +72,9 @@ Nice!
 Not nice!
 ```
 
-## 分析 vuln-32
+### 0x02 分析 vuln-32
 
-让我们用 radare2 对其进行反汇编：
+用 radare2 对其进行反汇编：
 
 ```bash
 $ r2 -d -A ./vuln-32
@@ -159,14 +161,14 @@ INFO: hit breakpoint at: 0x8049162
 ```
 
 在这里，我显示了该命令的完整输出。因为其中有很多内容都是相关的。`radare2` 在
-检测局部变量方面做得很好。正如你在顶部所看到的，有一个名为 `arg_8h` 。后来
-又将 `arg_8h` 与 `0xdeadbeef` 进行比较：
+检测局部变量方面做得很好。正如你在顶部所看到的，有一个名为 `arg_8h` 的局部变量。
+后来，又将 `arg_8h` 与 `0xdeadbeef` 进行比较：
 
 ```bash
 cmp dword [arg_8h], 0xdeadbeef
 ```
 
-显然这就是我们的参数。
+因此可以分析出 `arg_8h` 就是我们的参数。
 
 现在我们知道，当有一个参数时，它会被压入栈，使栈看起来像：
 
@@ -174,6 +176,75 @@ cmp dword [arg_8h], 0xdeadbeef
 return address        param_1
 ```
 
-## 分析 vuln-64
+### 0x03 分析 vuln-64
+
+我们在这里再次反汇编 `main` ：
+
+```bash
+0x00401153      55             push rbp
+0x00401154      4889e5         mov rbp, rsp
+0x00401157      bfefbeadde     mov edi, 0xdeadbeef
+0x0040115c      e8c1ffffff     call sym.vuln
+0x00401161      bfdec0adde     mov edi, 0xdeadc0de
+0x00401166      e8b7ffffff     call sym.vuln
+0x0040116b      b800000000     mov eax, 0
+0x00401170      5d             pop rbp
+0x00401171      c3             ret
+```
+
+呵呵，不一样了。正如我们之前提到的，参数被移至 `rdi`（这里的反汇编中是 `edi` ，
+但 `edi` 只是 `rdi` 的低 32 bits，并且参数只有 32 bits 长，所以改为 `EDI`）。
+如果我们再次中断 `sym.vuln` ，我们可以使用以下命令检查 `rdi`。
+
+```bash
+$ dr rdi
+```
+
+{{<admonition type="info">}}
+
+如果只使用 `dr` 则会显示所有寄存器。
+
+{{</admonition>}}
+
+```bash
+[0x00401153]> db sym.vuln 
+[0x00401153]> dc
+hit breakpoint at: 401122
+[0x00401122]> dr rdi
+0xdeadbeef
+```
+
+{{<admonition type="info">}}
+
+寄存器用于参数，但返回地址仍然压入栈，并且在 ROP 中放置在函数地址之后。
+
+{{</admonition>}}
+
+## 多个参数
+
+{{< link href="/pwn_assets/calling-convention-multi-param.zip" content="calling-convention-multi-param.zip" title="Download calling-convention-multi-param.zip" download="calling-convention-multi-param.zip" card=true >}}
+
+### 0x01 源码
+
+```c {title="source.c"}
+#include <stdio.h>
+
+void vuln(int check, int check2, int check3) {
+  if (check == 0xdeadbeef && check2 == 0xdeadc0de && check3 == 0xc0ded00d) {
+    puts("Nice!");
+  } else {
+    puts("Not nice!");
+  }
+}
+
+int main() {
+  vuln(0xdeadbeef, 0xdeadc0de, 0xc0ded00d);
+  vuln(0xdeadc0de, 0x12345678, 0xabcdef10);
+}
+```
+
+### 0x02 分析 vuln-32
+
+我们已经看到了几乎相同的二进制文件的完整反汇编，因此我只会隔离重要的部分。
 
 
