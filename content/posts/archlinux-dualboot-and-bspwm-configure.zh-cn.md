@@ -505,6 +505,10 @@ chmod +x install
 
 请看 [issue](https://github.com/gh0stzk/dotfiles/issues/86#issuecomment-1638235631)
 
+### 为什么有网络但是状态栏始终显示 Offline
+
+请看 [wiki](https://github.com/CuB3y0nd/1llusion/wiki/Firsts-steps-after-installing)
+
 ### 为什么我的 neovim 图标显示不出来
 
 请安装 [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
@@ -527,3 +531,7 @@ cd nerd-fonts
 
 如果你卸载桌面环境的时候同时删除了依赖，请自行确定哪些 `bspwm` 所需要的依赖
 没有安装，重新安装即可修复。
+
+### 更多问题都请移步 wiki
+
+[wiki](https://github.com/CuB3y0nd/1llusion/wiki)
