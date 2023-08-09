@@ -300,7 +300,7 @@ INFO: hit breakpoint at: 0x8049162
 因此，如何将更多参数放置在栈上就变得非常清楚了：
 
 ```
-return pointer        param1        param2        param3        [...]        paramN
+return address        param1        param2        param3        [...]        paramN
 ```
 
 ### 0x03 分析 vuln-64
