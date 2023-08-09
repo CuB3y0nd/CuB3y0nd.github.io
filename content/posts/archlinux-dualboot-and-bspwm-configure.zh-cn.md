@@ -497,21 +497,26 @@ chmod +x install
 
 ## FAQ
 
-### 这个 bspwm 提供了哪些快捷键
+### 这个 bspwm 提供了哪些快捷键？
 
-请看 [wiki](https://github.com/CuB3y0nd/1llusion/wiki)
+请看 [wiki](https://github.com/CuB3y0nd/1llusion/wiki) 。
 
 ### eww 无法编译/部分使用 eww 小组件 的主题（e.g. z0mbi3）无法使用
 
-请看 [issue](https://github.com/gh0stzk/dotfiles/issues/86#issuecomment-1638235631)
+请看 [issue](https://github.com/gh0stzk/dotfiles/issues/86#issuecomment-1638235631) 。
 
-### 为什么有网络但是状态栏始终显示 Offline
+### 为什么有网络但是状态栏始终显示 Offline？
 
-请看 [wiki](https://github.com/CuB3y0nd/1llusion/wiki/Firsts-steps-after-installing)
+请看 [wiki](https://github.com/CuB3y0nd/1llusion/wiki/Firsts-steps-after-installing) 。
 
-### 为什么我的 neovim 图标显示不出来
+### 你的 bspwm 不适配我的显示器分辨率，我该怎么调整？
 
-请安装 [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
+你可以参考 [Xorg](https://wiki.archlinuxcn.org/wiki/Xorg) 和 [HiDPI](https://wiki.archlinuxcn.org/wiki/HiDPI) 。
+使用 `echo 'Xft.dpi:<大小>' >> ~/.Xresources` 指令来配置。
+
+### 为什么我的 neovim 图标显示不出来？
+
+请安装 [nerd-fonts](https://github.com/ryanoasis/nerd-fonts) 。
 
 我使用 `JetBrainsMono` 作为 `neovim` 的字体，指令如下：
 
@@ -534,4 +539,4 @@ cd nerd-fonts
 
 ### 更多问题都请移步 wiki
 
-[wiki](https://github.com/CuB3y0nd/1llusion/wiki)
+[wiki](https://github.com/CuB3y0nd/1llusion/wiki) 。
