@@ -316,8 +316,8 @@ return address        param1        param2        param3        [...]        par
 0x00401193      e88affffff     call sym.vuln
 ```
 
-除了 `rdi` 之外，我们还把参数压到了 `rsi` 和 `rdx`（或者在本例中为它们
-的低 32 bits）。
+同理，根据上面的调试步骤查看寄存器内容，我们可以发现：除了 `rdi` 之外，
+我们还把参数压到了 `rsi` 和 `rdx` 。
 
 ### 更大的 64-bits 值
 
