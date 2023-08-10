@@ -40,11 +40,11 @@ repost:
 
 <!--more-->
 
-## 单个参数
+## 0x01 单个参数
 
 {{< link href="/pwn_assets/calling-conventions-one-param.zip" content="calling-conventions-one-param.zip" title="Download calling-conventions-one-param.zip" download="calling-conventions-one-param.zip" card=true >}}
 
-### 0x01 源码
+### 1x01 源码
 
 我们先快速浏览一下源码：
 
@@ -72,7 +72,7 @@ Nice!
 Not nice!
 ```
 
-### 0x02 分析 vuln-32
+### 1x02 分析 vuln-32
 
 用 radare2 对其进行反汇编：
 
@@ -175,7 +175,7 @@ cmp dword [arg_8h], 0xdeadbeef
 return address        param_1
 ```
 
-### 0x03 分析 vuln-64
+### 1x03 分析 vuln-64
 
 我们在这里再次反汇编 `main` ：
 
@@ -223,11 +223,11 @@ INFO: hit breakpoint at: 0x401122
 
 {{</admonition>}}
 
-## 多个参数
+## 0x02 多个参数
 
 {{< link href="/pwn_assets/calling-convention-multi-param.zip" content="calling-convention-multi-param.zip" title="Download calling-convention-multi-param.zip" download="calling-convention-multi-param.zip" card=true >}}
 
-### 0x01 源码
+### 1x01 源码
 
 ```c {title="source.c"}
 #include <stdio.h>
@@ -246,7 +246,7 @@ int main() {
 }
 ```
 
-### 0x02 分析 vuln-32
+### 1x02 分析 vuln-32
 
 由于我们之前已经看到了几乎相同的二进制文件的完整反汇编，因此在这里我只会列出
 重要的部分：
@@ -303,7 +303,7 @@ INFO: hit breakpoint at: 0x8049162
 return address        param1        param2        param3        [...]        paramN
 ```
 
-### 0x03 分析 vuln-64
+### 1x03 分析 vuln-64
 
 ```
 0x00401170      ba0dd0dec0     mov edx, 0xc0ded00d
@@ -319,7 +319,7 @@ return address        param1        param2        param3        [...]        par
 同理，根据上面的调试步骤查看寄存器内容，我们可以发现：除了 `rdi` 之外，
 我们还把参数压到了 `rsi` 和 `rdx` 。
 
-## 更大的 64-bits 值
+## 0x03 更大的 64-bits 值
 
 只是为了表明实际上最终使用的是 `rdi` 而不是 `edi` ，我将更改原始的单参数
 代码以使用更大的数字：
