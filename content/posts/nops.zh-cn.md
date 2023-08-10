@@ -26,7 +26,7 @@ resources:
     src: featured-image.jpg
   - name: featured-image-preview
     src: featured-image-preview.jpg
-toc: true
+toc: false
 math: true
 lightgallery: false
 password:
