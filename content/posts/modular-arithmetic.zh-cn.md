@@ -16,7 +16,7 @@ weight: 0
 tags:
   - Crypto
 categories:
-  - Cryptograhpy
+  - Cryptography
 hiddenFromHomePage: false
 hiddenFromSearch: false
 summary:
