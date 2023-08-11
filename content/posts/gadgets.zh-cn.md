@@ -45,12 +45,16 @@ gadgets 的 `ret` ，将它们串成一个链来完成我们想要做的事情�
 
 假设在执行 `pop rdi; ret` gadget 期间栈看起来像这样：
 
-![Image-1](https://s1.ax1x.com/2023/08/11/pPneJr8.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPneJr8.png"/>
+</div>
 
 很明显：`0x10` 被弹出到 `rdi` 中，因为它在弹出到 `rdi` 前位于栈顶。一旦出栈，
 `rsp` 就会移动：
 
-![Image-2](https://s1.ax1x.com/2023/08/11/pPneGKf.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPneGKf.png"/>
+</div>
 
 由于 `ret` 相当于 `pop rip` ，因此 `0x5655576724` 被移至 `rip` 中。
 请注意栈是如何布局的。
@@ -63,17 +67,23 @@ gadgets 的 `ret` ，将它们串成一个链来完成我们想要做的事情�
 假设我们想要利用二进制文件跳转到 `pop rdi; ret` gadget，将 `0x100` 弹出到
 `rdi` 中，然后跳转到 `flag()` 。让我们一步步执行：
 
-![Image-3](https://s1.ax1x.com/2023/08/11/pPneYqS.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPneYqS.png"/>
+</div>
 
 在原来的 `ret` 上，我们覆盖了返回地址，我们让 gadget 地址出栈。现在 `rip`
 移动指向到 gadget，`rsp` 移动到下一个内存地址。
 
-![Image-4](https://s1.ax1x.com/2023/08/11/pPneNVg.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPneNVg.png"/>
+</div>
 
 `rsp` 移动指向到 `0x100`；`rip` 变为 `pop rdi`。现在，当我们出栈时，`0x100`
 被移入 `rdi` 。
 
-![Image-5](https://s1.ax1x.com/2023/08/11/pPne3xP.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPne3xP.png"/>
+</div>
 
 RSP 移动到栈上的下一个项目，即 `flag()` 的地址。执行 `ret` 并调用 `flag()` 。
 
@@ -83,11 +93,15 @@ RSP 移动到栈上的下一个项目，即 `flag()` 的地址。执行 `ret` �
 的 `pop rip`）。如果我们想将 `0x10` 弹出到 `rdi` 然后跳转到 `0x16` ，
 我们的 payload 将如下所示：
 
-![Image-6](https://s1.ax1x.com/2023/08/11/pPneUaQ.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPneUaQ.png"/>
+</div>
 
 注：如果你有多个 `pop` 指令，则可以添加更多值。
 
-![Image-7](https://s1.ax1x.com/2023/08/11/pPnea5j.png)
+<div align=center>
+  <image src="https://s1.ax1x.com/2023/08/11/pPnea5j.png"/>
+</div>
 
 {{<admonition type="info">}}
 
