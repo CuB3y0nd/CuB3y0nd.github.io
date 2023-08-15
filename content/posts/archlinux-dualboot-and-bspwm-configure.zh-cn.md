@@ -214,15 +214,17 @@ cfdisk /dev/nvme0n1
 - EFI 分区 格式化为 fat
 - root 分区 格式化为 ext4
 - home 分区 格式化为 ext4
-- 格式化并启用 swap 分区
+- 创建并启用 swap 分区
 
 ```bash
 lsblk
-mkfs.vfat -F32 /dev/nvme0n1p5
+mkfs.fat -F 32 /dev/nvme0n1p5
 mkfs.ext4 /dev/nvme0n1p6
 mkfs.ext4 /dev/nvme0n1p7
-mkswap /dev/nvme0n1p8
-swapon /dev/nvme0n1p8
+fallocate -l 8192M /mnt/swapfile
+chmod 600 /mnt/swapfile
+mkswap -L swap /mnt/swapfile
+swapon /mnt/swapfile
 lsblk
 ```
 
@@ -260,7 +262,7 @@ pacman -Sy
 
 - `base`
 - `base-devel`
-- `linux`
+- `linux-zen`
 - `linux-headers`
 - `linux-firmware`
 
@@ -274,7 +276,6 @@ fcitx5 输入法（不需要中文输入的可以不装）：
 - `fcitx5-chinese-addons`
 - `fcitx5-configtool`
 - `fcitx5-gtk`
-- `fcitx5-qt`
 - `fcitx5-material-color`
 - `fcitx5-pinyin-zhwiki`
 
@@ -287,21 +288,20 @@ fcitx5 输入法（不需要中文输入的可以不装）：
 - `git`
 - `wget`
 - `proxychains`
-- `htop`
+- `btop`
 - `bash-completion`
 
 网络方面（没这些就别想用 `wlan` 了）：
 
-- `dhcpcd`
 - `iwd`
 - `networkmanager`
 
 音频输出：
 
-- `sof-firmware`
-- `alsa-firmware`
-- `alsa-utils`
-- `alsa-ucm-conf`
+- `pipewire`
+- `pipewire-pulse`
+- `pipewire-alsa`
+- `pipewire-jack`
 
 杂项（必装）：`e2fsprogs` `ntfs-3g`
 
@@ -316,13 +316,13 @@ fcitx5 输入法（不需要中文输入的可以不装）：
 蓝牙（可选）：`bluez`
 
 ```bash
-pacstrap -K -i /mnt base base-devel linux linux-headers linux-firmware amd-ucode xorg-xinit xorg-server fcitx5 fcitx5-chinese-addons fcitx5-configtool fcitx5-gtk fcitx5-qt fcitx5-material-color fcitx5-pinyin-zhwiki sudo neofetch neovim git wget proxychains htop dhcpcd iwd networkmanager alsa-utils e2fsprogs ntfs-3g bash-completion sof-firmware alsa-firmware alsa-ucm-conf adobe-source-han-serif-cn-fonts wqy-zenhei noto-fonts-cjk noto-fonts-emoji noto-fonts-extra bluez
+pacstrap -i /mnt base base-devel linux-zen linux-headers linux-firmware amd-ucode xorg-xinit xorg-server fcitx5 fcitx5-chinese-addons fcitx5-configtool fcitx5-gtk fcitx5-material-color fcitx5-pinyin-zhwiki sudo neofetch neovim git wget proxychains btop iwd networkmanager alsa-utils e2fsprogs ntfs-3g bash-completion pipewire pipewire-pulse pipewire-alsa pipewire-jack adobe-source-han-serif-cn-fonts wqy-zenhei noto-fonts-cjk noto-fonts-emoji noto-fonts-extra bluez
 ```
 
 ### 生成 fstab
 
 ```bash
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /mnt >>/mnt/etc/fstab
 cat /mnt/etc/fstab
 ```
 
@@ -339,7 +339,7 @@ arch-chroot /mnt
 passwd
 useradd -m cub3y0nd
 passwd cub3y0nd
-usermod -aG wheel,storage,power cub3y0nd
+usermod -aG wheel,storage,power -s /usr/bin/zsh cub3y0nd
 sudo nvim /etc/sudoers
 
 取消注释第 89 行：%wheel ALL=(ALL:ALL) ALL
@@ -381,7 +381,7 @@ hwclock --systohc
 ### 双系统引导设置
 
 ```bash
-pacman -S grub efibootmgr os-prober dosfstools mtools
+pacman -S grub efibootmgr os-prober ntfs-3g dosfstools mtools
 nvim /etc/default/grub
 
 将 `GRUB_CMDLINE_LINUX_DEFAULT` 的所有内容改为 GRUB_CMDLINE_LINUX_DEFAULT="loglevel=5 nowatchdog"
@@ -397,7 +397,7 @@ loglevel 改为 5 是为了后续如果出现系统错误，方便排错
 **这一步使用 `MBR/Legacy Boot` 的同学需要修改该指令，具体怎么改可以自己上网查询。**
 
 ```bash
-grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=grub_uefi --recheck
+grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=Arch --recheck
 ```
 
 ### 生成 grub 配置
@@ -409,7 +409,6 @@ grub-mkconfig -o /boot/grub/grub.cfg
 ### 设置 DHCP 服务 和 网络服务 开机自启
 
 ```bash
-systemctl enable dhcpcd.service
 systemctl enable NetworkManager.service
 ```
 

@@ -2,7 +2,7 @@
 title: ret2win
 subtitle: 最基本的二进制漏洞利用
 date: 2023-08-07T21:59:39+08:00
-draft: true
+draft: false
 author:
   name: CuB3y0nd
   link:
@@ -43,12 +43,12 @@ repost:
 
 为此，我们需要了解：
 
-- 直到我们开始覆盖返回地址（EIP）为止的 `溢出 Padding`
+- 直到我们开始覆盖返回指针（EIP）为止的 `溢出 Padding`
 - 我们想要将 EIP 覆盖成什么值
 
 {{<admonition type="warning" title="注意">}}
 
-当我说「覆盖 EIP」时，我的意思是覆盖压入到 EIP 中的已保存的返回地址。
+当我说「覆盖 EIP」时，我的意思是覆盖压入到 EIP 中的已保存的返回指针。
 EIP 寄存器 并不位于栈上，因此不会被直接覆盖。
 
 {{</admonition>}}
@@ -59,9 +59,10 @@ EIP 寄存器 并不位于栈上，因此不会被直接覆盖。
 
 ## 0x01 计算溢出 Padding
 
-这可以通过简单的试验和错误找到。我们可以发送可变数量的字符，将 `Segmentation Fault`
-消息和 pwndbg 结合使用，来判断我们何时覆盖了 EIP 。有一种比简单的暴力破解更好的
-方法：[德布鲁因（De Bruijn）序列](https://www.cubeyond.net/de-bruijn-sequences/)，为了方便起见，现在我们直接使用已经计算出的溢出 Padding。
+这可以通过简单的试验和错误找到。我们可以发送可变数量的字符，
+将 `Segmentation Fault` 消息和 radare2 结合使用，来判断我们何时覆盖
+了 EIP 。有一种比简单的暴力破解更好的方法：[德布鲁因（De Bruijn）序列](https://www.cubeyond.net/de-bruijn-sequences/)，
+为了方便起见，现在我们直接使用已经计算出的溢出 Padding。
 
 {{<admonition type="info">}}
 
@@ -77,16 +78,17 @@ EIP 寄存器 并不位于栈上，因此不会被直接覆盖。
 现在我们需要在二进制文件中找到 `flag()` 函数的地址，这很简单：
 
 ```
-$ pwndbg vuln
-$ i fun
+$ r2 -d -A ./vuln
+$ afl
 [...]
-0x080491c3  flag
+0x080491c3    1     43 sym.flag
 [...]
 ```
 
 {{<admonition type="info">}}
 
-`i fun` 代表 **i**nfo **f**unction，可以列出分析中发现的函数。
+afl 代表 **a**nalyze **f**unction **l**ist，可以列出分析中发现
+的函数
 
 {{</admonition>}}
 
@@ -110,7 +112,7 @@ address = '\x08\x04\x91\xc3'
 
 {{<admonition type="info">}}
 
-使用 `xxd` 可以以二进制或十六进制显示文件的内容：
+使用 `xxd` 可以以二进制或十六进制显示文件的内容
 
 {{< typeit code=bash >}}
 
@@ -175,7 +177,7 @@ $ r2 -d -A $(pidof vuln)
 ```
 
 通过提供进程的 PID，radare2 可以 hook 它。让我们在 `unsafe()` 返回时中断并读取
-返回地址的值。
+返回指针的值。
 
 ```
 [0xf7ef9fd0]> s main; pdf
