@@ -406,7 +406,7 @@ grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=Arch --rec
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### 设置 DHCP 服务 和 网络服务 开机自启
+### 设置网络服务开机自启
 
 ```bash
 systemctl enable NetworkManager.service
