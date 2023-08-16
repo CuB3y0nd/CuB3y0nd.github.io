@@ -263,7 +263,7 @@ pacman -Sy
 - `base`
 - `base-devel`
 - `linux-zen`
-- `linux-headers`
+- `linux-zen-headers`
 - `linux-firmware`
 
 根据自己的 CPU 决定用哪个微码：`amd-ucode` / `intel-ucode`
@@ -316,7 +316,7 @@ fcitx5 输入法（不需要中文输入的可以不装）：
 蓝牙（可选）：`bluez`
 
 ```bash
-pacstrap -i /mnt base base-devel linux-zen linux-headers linux-firmware amd-ucode xorg-xinit xorg-server fcitx5 fcitx5-chinese-addons fcitx5-configtool fcitx5-gtk fcitx5-material-color fcitx5-pinyin-zhwiki sudo neofetch neovim git wget proxychains btop iwd networkmanager alsa-utils e2fsprogs ntfs-3g bash-completion pipewire pipewire-pulse pipewire-alsa pipewire-jack adobe-source-han-serif-cn-fonts wqy-zenhei noto-fonts-cjk noto-fonts-emoji noto-fonts-extra bluez
+pacstrap -i /mnt base base-devel linux-zen linux-zen-headers linux-firmware amd-ucode xorg-xinit xorg-server fcitx5 fcitx5-chinese-addons fcitx5-configtool fcitx5-gtk fcitx5-material-color fcitx5-pinyin-zhwiki sudo neofetch neovim git wget proxychains btop iwd networkmanager alsa-utils e2fsprogs ntfs-3g bash-completion pipewire pipewire-pulse pipewire-alsa pipewire-jack adobe-source-han-serif-cn-fonts wqy-zenhei noto-fonts-cjk noto-fonts-emoji noto-fonts-extra bluez
 ```
 
 ### 生成 fstab
