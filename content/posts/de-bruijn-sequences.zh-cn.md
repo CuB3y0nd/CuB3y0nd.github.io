@@ -1,6 +1,6 @@
 ---
 title: 德布鲁因（De Bruijn）序列
-subtitle: 更好的计算偏移量的方法
+subtitle: 计算偏移量的方法
 date: 2023-08-08T02:30:16+08:00
 draft: false
 author:
@@ -46,44 +46,44 @@ repost:
 
 ## 0x01 生成序列
 
-同样，`radare2` 附带了一个很好的命令行工具（称为 ragg2），可以为我们生成它。
+同样，`pwndbg` 附带了一个很好的命令行工具（称为 `cyclic`），可以为我们生成它。
 让我们创建一个长度为 `100` 的序列。
 
 ```
-$ ragg2 -r -P 100
-AAABAACAADAAEAAFAAGAAHAAIAAJAAKAALAAMAANAAOAAPAAQAARAASAATAAUAAVAAWAAXAAYAAZAAaAAbAAcAAdAAeAAfAAgAAh
+$ cyclic 100
+aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaa
 ```
 
-`-r` 告诉它显示 ASCII 字节而不是十六进制对</br>
-`-P` 指定长度
+{{<admonition type="tip">}}
+
+直接使用 cyclic 将生成默认长度为 100 的序列，指定序列长度可以使用 `cyclic <count>` 。
+
+{{</admonition>}}
 
 ## 0x02 使用序列
 
-现在我们有了序列，让我们在 `radare2` 提示输入时将其输入，使程序崩溃，然后计算
+现在我们有了序列，让我们在 `pwndbg` 提示输入时将其输入，使程序崩溃，然后计算
 EIP 沿着序列有多远。
 
 ```
-$ r2 -d -A ./vuln
-[0xf7f19fd0]> dc
+$ pwndbg vuln
+$ r
 Overflow me
-AAABAACAADAAEAAFAAGAAHAAIAAJAAKAALAAMAANAAOAAPAAQAARAASAATAAUAAVAAWAAXAAYAAZAAaAAbAAcAAdAAeAAfAAgAAh
-[+] SIGNAL 11 errno=0 addr=0x41534141 code=1 si_pid=1095975233 ret=0
+aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaa
+$ c
+[...]
+Program received signal SIGSEGV, Segmentation fault.
+0x6161616e in ?? ()
+[...]
 ```
 
-崩溃的地址是 `0x41534141` ；我们可以使用 `radare2` 的内置命令 `wopO` 来计算偏移量。
+崩溃的地址是 `0x6161616e` ；我们可以给 `cyclic` 加上参数 `-l <lookup_value>` 来计算偏移量：
 
 ```
-[0x41534141]> wopO 0x41534141
-52
+$ cyclic -l 0x6161616e
+Finding cyclic pattern of 4 bytes: b'naaa' (hex: 0x6e616161)
+Found at offset 52
 ```
 
-成功得到了正确的偏移量！
+成功得到了正确的偏移地址！
 
-我们也可以偷懒，不复制崩溃地址：
-
-```
-[0x41534141]> wopO `dr eip`
-52
-```
-
-反引号表示首先计算 `dr eip`，然后再对其结果运行 `wopO` 。
