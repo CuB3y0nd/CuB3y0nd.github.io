@@ -198,12 +198,10 @@ $ python exp.py
     NX:       NX disabled
     PIE:      No PIE (0x8048000)
     RWX:      Has RWX segments
-[+] Starting local process 'vuln': pid 38046
-[DEBUG...]
+[+] Starting local process 'vuln': pid 39321
 [*] Switching to interactive mode
-[DEBUG...]
+Overflow me
 $ whoami
-[DEBUG...]
 cub3y0nd
 ```
 
@@ -212,7 +210,7 @@ cub3y0nd
 ```python {title="exp.py"}
 from pwn import *
 
-context(os='linux', arch='amd64', log_level='debug')
+context(os='linux', arch='amd64', log_level='info')
 
 context.binary = ELF('./vuln')
 
