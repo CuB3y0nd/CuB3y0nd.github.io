@@ -36,7 +36,7 @@ repost:
   url:
 ---
 
-这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨
+这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨。
 
 <!--more-->
 
@@ -74,100 +74,97 @@ Not nice!
 
 ### 1x02 分析 vuln-32
 
-用 radare2 对其进行反汇编：
+用 pwndbg 对其进行反汇编：
 
 ```
-$ r2 -d -A ./vuln-32
-$ s main; pdf
-
-0x080491ac      8d4c2404       lea ecx, [argv]
-0x080491b0      83e4f0         and esp, 0xfffffff0
-0x080491b3      ff71fc         push dword [ecx - 4]
-0x080491b6      55             push ebp
-0x080491b7      89e5           mov ebp, esp
-0x080491b9      51             push ecx
-0x080491ba      83ec04         sub esp, 4
-0x080491bd      e832000000     call sym.__x86.get_pc_thunk.ax
-0x080491c2      053e2e0000     add eax, 0x2e3e
-0x080491c7      83ec0c         sub esp, 0xc
-0x080491ca      68efbeadde     push 0xdeadbeef
-0x080491cf      e88effffff     call sym.vuln
-0x080491d4      83c410         add esp, 0x10
-0x080491d7      83ec0c         sub esp, 0xc
-0x080491da      68dec0adde     push 0xdeadc0de
-0x080491df      e87effffff     call sym.vuln
-0x080491e4      83c410         add esp, 0x10
-0x080491e7      b800000000     mov eax, 0
-0x080491ec      8b4dfc         mov ecx, dword [var_4h]
-0x080491ef      c9             leave
-0x080491f0      8d61fc         lea esp, [ecx - 4]
-0x080491f3      c3             ret
+$ disass main
+Dump of assembler code for function main:
+   0x080491ac <+0>:	lea    ecx,[esp+0x4]
+   0x080491b0 <+4>:	and    esp,0xfffffff0
+   0x080491b3 <+7>:	push   DWORD PTR [ecx-0x4]
+   0x080491b6 <+10>:	push   ebp
+   0x080491b7 <+11>:	mov    ebp,esp
+   0x080491b9 <+13>:	push   ecx
+   0x080491ba <+14>:	sub    esp,0x4
+   0x080491bd <+17>:	call   0x80491f4 <__x86.get_pc_thunk.ax>
+   0x080491c2 <+22>:	add    eax,0x2e3e
+   0x080491c7 <+27>:	sub    esp,0xc
+   0x080491ca <+30>:	push   0xdeadbeef
+   0x080491cf <+35>:	call   0x8049162 <vuln>
+   0x080491d4 <+40>:	add    esp,0x10
+   0x080491d7 <+43>:	sub    esp,0xc
+   0x080491da <+46>:	push   0xdeadc0de
+   0x080491df <+51>:	call   0x8049162 <vuln>
+   0x080491e4 <+56>:	add    esp,0x10
+   0x080491e7 <+59>:	mov    eax,0x0
+   0x080491ec <+64>:	mov    ecx,DWORD PTR [ebp-0x4]
+   0x080491ef <+67>:	leave
+   0x080491f0 <+68>:	lea    esp,[ecx-0x4]
+   0x080491f3 <+71>:	ret
+End of assembler dump.
 ```
 
-如果我们仔细观察对 `sym.vuln` 的调用，我们会看到一个 Pattern：
+如果我们仔细观察对 `vuln` 函数的调用，我们会看到一个 Pattern：
 
 ```
 push 0xdeadbeef
-call sym.vuln
+call   0x8049162 <vuln>
 [...]
 push 0xdeadc0de
-call sym.vuln
+call   0x8049162 <vuln>
 ```
 
-在调用函数之前，我们实际上先将 `参数` 压入了栈。现在让我们来研究一下 `sym.vuln` 。
+在调用函数之前，我们实际上先将 `参数` 压入了栈。现在让我们来研究一下 `vuln` 函数。
 
 ```
-[0xf7fe3fd0]> db sym.vuln
-[0xf7fe3fd0]> dc
-INFO: hit breakpoint at: 0x8049162
-[0x08049162]> pxw @ esp
-0xffffd79c  0x080491d4 0xdeadbeef 0xf7c0c850 0xf7fc1380
+$ b *0x08049162
+$ r
+Breakpoint 1, 0x08049166 in vuln ()
+$ x/20wx $esp
+0xffffd6cc:	0x080491d4	0xdeadbeef
 ```
 
 第一个值是我之前的博客中提到的 `返回地址` ，而第二个值是 `参数` 。这是有道理的，
-因为返回地址在 `调用` 期间被压入栈，因此它应该位于栈顶。现在让我们反汇编 `sym.vuln` ：
+因为返回地址在 `调用` 期间被压入栈，因此它应该位于栈顶。现在让我们反汇编 `vuln` ：
 
 ```
-┌ 74: sym.vuln (int32_t arg_8h);
-│           ; arg int32_t arg_8h @ ebp+0x8
-│           ; var int32_t var_4h @ ebp-0x4
-│           0x08049162      55             push ebp
-│           0x08049163      89e5           mov ebp, esp
-│           0x08049165      53             push ebx
-│           0x08049166      83ec04         sub esp, 4
-│           0x08049169      e886000000     call sym.__x86.get_pc_thunk.ax
-│           0x0804916e      05922e0000     add eax, 0x2e92
-│           0x08049173      817d08efbead.  cmp dword [arg_8h], 0xdeadbeef
-│       ┌─< 0x0804917a      7516           jne 0x8049192
-│       │   0x0804917c      83ec0c         sub esp, 0xc
-│       │   0x0804917f      8d9008e0ffff   lea edx, [eax - 0x1ff8]
-│       │   0x08049185      52             push edx
-│       │   0x08049186      89c3           mov ebx, eax
-│       │   0x08049188      e8a3feffff     call sym.imp.puts           ; int puts(const char *s)
-│       │   0x0804918d      83c410         add esp, 0x10
-│      ┌──< 0x08049190      eb14           jmp 0x80491a6
-│      │└─> 0x08049192      83ec0c         sub esp, 0xc
-│      │    0x08049195      8d900ee0ffff   lea edx, [eax - 0x1ff2]
-│      │    0x0804919b      52             push edx
-│      │    0x0804919c      89c3           mov ebx, eax
-│      │    0x0804919e      e88dfeffff     call sym.imp.puts           ; int puts(const char *s)
-│      │    0x080491a3      83c410         add esp, 0x10
-│      │    ; CODE XREF from sym.vuln @ 0x8049190(x)
-│      └──> 0x080491a6      90             nop
-│           0x080491a7      8b5dfc         mov ebx, dword [var_4h]
-│           0x080491aa      c9             leave
-└           0x080491ab      c3             ret
+Dump of assembler code for function vuln:
+   0x08049162 <+0>:	push   ebp
+   0x08049163 <+1>:	mov    ebp,esp
+   0x08049165 <+3>:	push   ebx
+   0x08049166 <+4>:	sub    esp,0x4
+   0x08049169 <+7>:	call   0x80491f4 <__x86.get_pc_thunk.ax>
+   0x0804916e <+12>:	add    eax,0x2e92
+   0x08049173 <+17>:	cmp    DWORD PTR [ebp+0x8],0xdeadbeef
+   0x0804917a <+24>:	jne    0x8049192 <vuln+48>
+   0x0804917c <+26>:	sub    esp,0xc
+   0x0804917f <+29>:	lea    edx,[eax-0x1ff8]
+   0x08049185 <+35>:	push   edx
+   0x08049186 <+36>:	mov    ebx,eax
+   0x08049188 <+38>:	call   0x8049030 <puts@plt>
+   0x0804918d <+43>:	add    esp,0x10
+   0x08049190 <+46>:	jmp    0x80491a6 <vuln+68>
+   0x08049192 <+48>:	sub    esp,0xc
+   0x08049195 <+51>:	lea    edx,[eax-0x1ff2]
+   0x0804919b <+57>:	push   edx
+   0x0804919c <+58>:	mov    ebx,eax
+   0x0804919e <+60>:	call   0x8049030 <puts@plt>
+   0x080491a3 <+65>:	add    esp,0x10
+   0x080491a6 <+68>:	nop
+   0x080491a7 <+69>:	mov    ebx,DWORD PTR [ebp-0x4]
+   0x080491aa <+72>:	leave
+   0x080491ab <+73>:	ret
+End of assembler dump.
 ```
 
-在这里，我显示了该命令的完整输出。因为其中有很多内容都是相关的。`radare2` 在
-检测局部变量方面做得很好。正如你在顶部所看到的，有一个名为 `arg_8h` 的局部变量。
-后来，又将 `arg_8h` 与 `0xdeadbeef` 进行比较：
+在这里，我显示了该命令的完整输出。因为其中有很多内容都是相关的。我们发现，
+有一个地址为 `ebp+0x8` 的局部变量。后来，又将 `ebp+0x8` 与 `0xdeadbeef` 进行比较：
 
 ```
-cmp dword [arg_8h], 0xdeadbeef
+cmp    DWORD PTR [ebp+0x8],0xdeadbeef
 ```
 
-因此可以分析出 `arg_8h` 就是我们的参数。
+因此可以分析出 `ebp+0x8` 就是我们的参数。
 
 现在我们知道，当有一个参数时，它会被压入栈，使栈看起来像：
 
@@ -180,38 +177,40 @@ return address        param_1
 我们在这里再次反汇编 `main` ：
 
 ```
-0x00401153      55             push rbp
-0x00401154      4889e5         mov rbp, rsp
-0x00401157      bfefbeadde     mov edi, 0xdeadbeef
-0x0040115c      e8c1ffffff     call sym.vuln
-0x00401161      bfdec0adde     mov edi, 0xdeadc0de
-0x00401166      e8b7ffffff     call sym.vuln
-0x0040116b      b800000000     mov eax, 0
-0x00401170      5d             pop rbp
-0x00401171      c3             ret
+Dump of assembler code for function main:
+   0x0000000000401153 <+0>:	push   rbp
+   0x0000000000401154 <+1>:	mov    rbp,rsp
+   0x0000000000401157 <+4>:	mov    edi,0xdeadbeef
+   0x000000000040115c <+9>:	call   0x401122 <vuln>
+   0x0000000000401161 <+14>:	mov    edi,0xdeadc0de
+   0x0000000000401166 <+19>:	call   0x401122 <vuln>
+   0x000000000040116b <+24>:	mov    eax,0x0
+   0x0000000000401170 <+29>:	pop    rbp
+   0x0000000000401171 <+30>:	ret
+End of assembler dump.
 ```
 
 我们发现 64-bit 和 32-bit 在传参上不一样了。正如我在这篇 [博客](https://www.cubeyond.net/32-bit-vs-64-bit/) 中所说的，
 参数被移至 `rdi`（这里的反汇编中写的是 `edi` ，但 `edi` 只是 `rdi` 的低 32 bits
 寄存器。原因是我们传入的参数只有 32 bits 大小，所以改为 `EDI` 可以节省
-内存消耗）。如果我们再次中断 `sym.vuln` ，我们可以使用以下命令检查 `rdi` 。
+内存消耗）。如果我们再次中断 `vuln` ，我们可以使用以下命令检查 `rdi` ：
 
 ```
-$ dr rdi
+$ regs rdi
 ```
 
 {{<admonition type="info">}}
 
-如果只使用 `dr` 则会显示所有寄存器。
+如果只使用 `regs` 则会显示所有寄存器。
 
 {{</admonition>}}
 
 ```
-[0x00401153]> db sym.vuln
-[0x00401153]> dc
-INFO: hit breakpoint at: 0x401122
-[0x00401122]> dr rdi
-0xdeadbeef
+$ b *0x000000000040115c
+$ r
+Breakpoint 1, 0x000000000040115c in main ()
+$ regs rdi
+*RDI  0xdeadbeef
 ```
 
 {{<admonition type="info">}}
@@ -252,15 +251,15 @@ int main() {
 重要的部分：
 
 ```
-0x080491dd      680dd0dec0     push 0xc0ded00d
-0x080491e2      68dec0adde     push 0xdeadc0de
-0x080491e7      68efbeadde     push 0xdeadbeef
-0x080491ec      e871ffffff     call sym.vuln
+0x080491dd <+30>:	push   0xc0ded00d
+0x080491e2 <+35>:	push   0xdeadc0de
+0x080491e7 <+40>:	push   0xdeadbeef
+0x080491ec <+45>:	call   0x8049162 <vuln>
 [...]
-0x080491f7      6810efcdab     push 0xabcdef10
-0x080491fc      6878563412     push 0x12345678
-0x08049201      68dec0adde     push 0xdeadc0de
-0x08049206      e857ffffff     call sym.vuln
+0x080491f7 <+56>:	push   0xabcdef10
+0x080491fc <+61>:	push   0x12345678
+0x08049201 <+66>:	push   0xdeadc0de
+0x08049206 <+71>:	call   0x8049162 <vuln>
 ```
 
 我们发现 `压栈` 和 `传参` 顺序是相反的。这是因为取参的时候是从低地址向高地址取参，
@@ -290,11 +289,12 @@ int main() {
 {{</admonition>}}
 
 ```
-[0x080491bf]> db sym.vuln
-[0x080491bf]> dc
-INFO: hit breakpoint at: 0x8049162
-[0x08049162]> pxw @ esp
-0xff80358c  0x080491f1 0xdeadbeef 0xdeadc0de 0xc0ded00d
+$ b *0x080491ec
+$ r
+Breakpoint 1, 0x080491ec in main ()
+$ s
+$ x/20wx $esp
+0xffffd6bc:	0x080491f1	0xdeadbeef	0xdeadc0de	0xc0ded00d
 ```
 
 因此，如何将更多参数放置在栈上就变得非常清楚了：
@@ -306,14 +306,15 @@ return address        param1        param2        param3        [...]        par
 ### 1x03 分析 vuln-64
 
 ```
-0x00401170      ba0dd0dec0     mov edx, 0xc0ded00d
-0x00401175      bedec0adde     mov esi, 0xdeadc0de
-0x0040117a      bfefbeadde     mov edi, 0xdeadbeef
-0x0040117f      e89effffff     call sym.vuln
-0x00401184      ba10efcdab     mov edx, 0xabcdef10
-0x00401189      be78563412     mov esi, 0x12345678
-0x0040118e      bfdec0adde     mov edi, 0xdeadc0de
-0x00401193      e88affffff     call sym.vuln
+mov    edx,0xc0ded00d
+mov    esi,0xdeadc0de
+mov    edi,0xdeadbeef
+call   0x401122 <vuln>
+[...]
+mov    edx,0xabcdef10
+mov    esi,0x12345678
+mov    edi,0xdeadc0de
+call   0x401122 <vuln>
 ```
 
 同理，根据上面的调试步骤查看寄存器内容，我们可以发现：除了 `rdi` 之外，
@@ -341,9 +342,9 @@ int main() {
 如果你反汇编 `main` ，你可以看到它被反汇编为：
 
 ```
-movabs rax, 0xdeadbeefc0ded00d
-mov rdi, rax
-call sym.vuln
+movabs rax,0xeadbeefc0dedd00d
+mov    rdi,rax
+call   0x401126 <vuln>
 ```
 
 {{<admonition type="info">}}
