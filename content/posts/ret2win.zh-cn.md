@@ -182,9 +182,8 @@ $ c
 
 << press any button on the exploit terminal interface >>
 
-$ bt
-#0  0x080491aa in unsafe ()
-#1  0xc3910408 in ?? ()
+$ x/20wx $esp
+0xffffd7dc:	0xc3910408
 [...]
 ```
 
