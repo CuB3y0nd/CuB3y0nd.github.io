@@ -115,7 +115,7 @@ RSP 移动到栈上的下一个项目，即 `flag()` 的地址。执行 `ret` �
 我们可以使用 [ROPGadget](https://github.com/JonathanSalwan/ROPgadget) 工具来查找可能的 gadgets 。
 
 ```
-$ ROPgadget --binary ./vuln-64
+$ ROPgadget --binary vuln-64
 
 Gadgets information
 ============================================================
@@ -128,7 +128,7 @@ Gadgets information
 将其与 `grep` 结合起来查找特定的寄存器：
 
 ```
-$ ROPgadget --binary ./vuln-64 | grep rdi
+$ ROPgadget --binary vuln-64 | grep rdi
 
 0x0000000000401096 : or dword ptr [rdi + 0x404030], edi ; jmp rax
 0x00000000004011db : pop rdi ; ret
