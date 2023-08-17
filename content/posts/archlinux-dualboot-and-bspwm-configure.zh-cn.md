@@ -494,6 +494,64 @@ chmod +x install
 
 脚本执行结束后重启，使用 `startx` 指令即可进入 `bspwm` 。
 
+## AMD + NVIDIA 双显卡驱动安装
+
+### 基础包安装
+
+```bash
+sudo pacman -S xf86-video-amdgpu
+sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime
+
+# glmark2 是开源性能测试工具，可选
+sudo pacman -S glmark2
+
+yay -S optimus-manager optimus-manager-qt --noconfirm
+```
+
+### 配置 optimus-manager
+
+```bash
+cp /usr/share/optimus-manager.conf /etc/optimus-manager/optimus-manager.conf
+
+sudo -E nvim /etc/optimus-manager/optimus-manager.conf
+
+将 `pci_power_control` 改为 `yes`
+
+在 `[amd]` 下，将 `driver` 改为 `amdgpu`
+```
+
+### 防止内核冲突
+
+```bash
+sudo -E nvim /etc/mkinitcpio.conf
+
+把 `kms` 从 `HOOKS` 里面移除
+
+sudo mkinitcpio -p linux-zen
+```
+
+### 切换教程
+
+```bash
+sudo -E nvim ~/.xinitrc
+
+添加 `/usr/bin/prime-offload`
+```
+
+使用 `optimus-manager --print-mode` 可以查看当前使用的显卡。
+
+使用 `optimus-manager --switch nvidia` 可以切换到 `nvidia` 显卡。
+
+切换显卡前需要先执行 `prime-offload`，切换显卡重新登陆后需要执行 `sudo prime-switch` 。
+
+可以允许 `wheel` 身份组以管理员权限执行 `prime-switch` 不用输入密码：
+
+```bash
+sudo -E nvim /etc/sudoers
+
+%wheel ALL=(ALL:ALL) NOPASSWD:/usr/bin/prime-switch
+```
+
 ## FAQ
 
 ### 这个 bspwm 提供了哪些快捷键？
