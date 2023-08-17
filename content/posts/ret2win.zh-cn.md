@@ -108,7 +108,7 @@ address = '\x08\x04\x91\xc3'
 
 这使得事情变得容易得多。
 
-{{<admonition type="info">}}
+{{<admonition type="tip">}}
 
 使用 `xxd` 可以以二进制或十六进制显示文件的内容：
 
