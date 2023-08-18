@@ -1,0 +1,28 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>CuB3y0nd&#39;s Blog</title>
+    <link>https://www.cubeyond.net/en/</link>
+    <description>CuB3y0nd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>root@cubeyond.net (CuB3y0nd)</managingEditor>
+      <webMaster>root@cubeyond.net (CuB3y0nd)</webMaster><lastBuildDate>Sun, 06 Aug 2023 03:35:50 &#43;0800</lastBuildDate>
+      <atom:link href="https://www.cubeyond.net/en/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+  <title>[Pinned] About my blog site</title>
+  <link>https://www.cubeyond.net/en/announcement-about-my-blog/</link>
+  <pubDate>Sat, 05 Aug 2023 07:04:28 &#43;0800</pubDate>
+  <author>CuB3y0nd</author>
+  <guid>https://www.cubeyond.net/en/announcement-about-my-blog/</guid>
+  <description><![CDATA[<blockquote>
+<p>About my blog site</p>
+</blockquote>]]></description>
+</item>
+<item>
+  <title>Chinese Copywriting Guidelines</title>
+  <link>https://www.cubeyond.net/en/chinese-copywriting-guidelines/</link>
+  <pubDate>Sun, 06 Aug 2023 03:35:50 &#43;0800</pubDate>
+  <author>CuB3y0nd</author>
+  <guid>https://www.cubeyond.net/en/chinese-copywriting-guidelines/</guid>
+  <description><![CDATA[<p>Chinese copywriting guidelines for better written communication.</p>]]></description>
+</item>
+</channel>
+</rss>

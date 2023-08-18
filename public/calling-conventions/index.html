@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>调用约定 - CuB3y0nd&#39;s Blog</title><meta name="author" content="CuB3y0nd">
+<meta name="author-link" content="">
+<meta name="description" content="这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨。" /><meta name="keywords" content='PWN, Stack' /><meta itemprop="name" content="调用约定">
+<meta itemprop="description" content="这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨。"><meta itemprop="datePublished" content="2023-08-09T10:16:36+08:00" />
+<meta itemprop="dateModified" content="2023-08-09T10:16:36+08:00" />
+<meta itemprop="wordCount" content="1967">
+<meta itemprop="keywords" content="PWN,Stack," /><meta property="og:title" content="调用约定" />
+<meta property="og:description" content="这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.cubeyond.net/calling-conventions/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-09T10:16:36+08:00" />
+<meta property="article:modified_time" content="2023-08-09T10:16:36+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="调用约定"/>
+<meta name="twitter:description" content="这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨。"/>
+<meta name="application-name" content="CuB3y0nd">
+<meta name="apple-mobile-web-app-title" content="CuB3y0nd"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="https://www.cubeyond.net/calling-conventions/" /><link rel="prev" href="https://www.cubeyond.net/return-oriented-programming/" /><link rel="next" href="https://www.cubeyond.net/divisibility-factors-and-euclids-algorithms/" /><link rel="stylesheet" href="/css/style.min.29568ef09d5311a3c0f1f3acaad398cdcf484d09bc243d4f17611357380e451d.css" integrity="sha256-KVaO8J1TEaPA8fOsqtOYzc9ITQm8JD1PF2ETVzgORR0="><link rel="stylesheet" href="/lib/fontawesome-free/all.min.01b035efb5dfa529c512f82962ed633328222da6f33c224244806d4798c67349.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k="><link rel="stylesheet" href="/lib/animate/animate.min.5fbaeb9f8e25d7e0143bae61d4b1802c16ce7390b96ceb2d498b0d96ff4c853f.css" integrity="sha256-X7rrn44l1&#43;AUO65h1LGALBbOc5C5bOstSYsNlv9MhT8="><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "调用约定",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/www.cubeyond.net\/calling-conventions\/"
+    },"genre": "posts","keywords": "PWN, Stack","wordcount":  1967 ,
+    "url": "https:\/\/www.cubeyond.net\/calling-conventions\/","datePublished": "2023-08-09T10:16:36+08:00","dateModified": "2023-08-09T10:16:36+08:00","publisher": {
+      "@type": "Organization",
+      "name": "CuB3y0nd","logo": "https:\/\/www.cubeyond.net\/logo.svg"},"author": {
+        "@type": "Person",
+        "name": "CuB3y0nd"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper" data-github-corner="right">
+    <div class="header-title">
+      <a href="/" title="CuB3y0nd&#39;s Blog"><img loading="lazy" src="/logo.svg" srcset="/logo.svg, /logo.svg 1.5x, /logo.svg 2x" sizes="auto" data-title="CuB3y0nd&#39;s Blog" data-alt="CuB3y0nd&#39;s Blog" class="logo" style="background: url(/svg/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;this.alt=this.dataset.alt;for(const a of ['style','data-title','data-alt','onerror','onload']){this.removeAttribute(a);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;this.alt=this.dataset.alt;for(const a of ['style','data-title','data-alt','onerror','onload']){this.removeAttribute(a);}"/><span class="header-title-text">CuB3y0nd&#39;s Blog</span></a><span id="typeit-header-subtitle-desktop" class="typeit header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-circle-info fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容…" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li><li class="menu-item language-switch">
+            <span role="button" aria-label="选择语言" title="选择语言"><i class="fa-solid fa-language fa-fw" aria-hidden="true"></i></span>
+            <ul class="sub-menu"><li class="menu-item">没有更多翻译</li></ul>
+          </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="CuB3y0nd&#39;s Blog"><img loading="lazy" src="/logo.svg" srcset="/logo.svg, /logo.svg 1.5x, /logo.svg 2x" sizes="auto" data-title="/logo.svg" data-alt="/logo.svg" class="logo" style="background: url(/svg/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;this.alt=this.dataset.alt;for(const a of ['style','data-title','data-alt','onerror','onload']){this.removeAttribute(a);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;this.alt=this.dataset.alt;for(const a of ['style','data-title','data-alt','onerror','onload']){this.removeAttribute(a);}"/><span class="header-title-text">CuB3y0nd&#39;s Blog</span></a><span id="typeit-header-subtitle-mobile" class="typeit header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容…" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-circle-info fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span><span class="menu-system-item language-switch">
+              <span role="button" aria-label="选择语言" title="选择语言">简体中文<i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden="true"></i></span>
+              <select class="language-select" onchange="location = this.value;"><option disabled>没有更多翻译</option></select>
+            </span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><nav aria-label="breadcrumb" class="breadcrumb-container sticky">
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a href="/posts/" title="Posts">Posts</a></li><li class="breadcrumb-item active" aria-current="page">调用约定</li>
+    </ol>
+  </nav><main class="container"><aside class="toc" id="toc-auto"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside>
+
+  <aside class="aside-custom">
+    </aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>调用约定</span>
+      </h1><p class="single-subtitle animate__animated animate__fadeIn">更深入地了解 32-bit 和 64-bit 程序的参数</p></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/avatar.jpg" srcset="/images/avatar.jpg, /images/avatar.jpg 1.5x, /images/avatar.jpg 2x" sizes="auto" data-title="CuB3y0nd" data-alt="CuB3y0nd" class="avatar" style="background: url(/svg/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;this.alt=this.dataset.alt;for(const a of ['style','data-title','data-alt','onerror','onload']){this.removeAttribute(a);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;this.alt=this.dataset.alt;for(const a of ['style','data-title','data-alt','onerror','onload']){this.removeAttribute(a);}"/>&nbsp;CuB3y0nd</span></span>
+          <span class="post-category">收录于 <a href="/categories/pwn/"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> PWN</a></span></div>
+      <div class="post-meta-line"><span title="发布于 2023-08-09 10:16:36"><i class="fa-regular fa-calendar-alt fa-fw me-1" aria-hidden="true"></i><time datetime="2023-08-09">2023-08-09</time></span>&nbsp;<span title="更新于 2023-08-09 10:16:36"><i class="fa-regular fa-edit fa-fw me-1" aria-hidden="true"></i><time datetime="2023-08-09">2023-08-09</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1967 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 4 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-单个参数">0x01 单个参数</a>
+      <ul>
+        <li><a href="#1x01-源码">1x01 源码</a></li>
+        <li><a href="#1x02-分析-vuln-32">1x02 分析 vuln-32</a></li>
+        <li><a href="#1x03-分析-vuln-64">1x03 分析 vuln-64</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-多个参数">0x02 多个参数</a>
+      <ul>
+        <li><a href="#1x01-源码-1">1x01 源码</a></li>
+        <li><a href="#1x02-分析-vuln-32-1">1x02 分析 vuln-32</a></li>
+        <li><a href="#1x03-分析-vuln-64-1">1x03 分析 vuln-64</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-更大的-64-bits-值">0x03 更大的 64-bits 值</a></li>
+  </ul>
+</nav></div>
+      </div><div class="content" id="content"><p>这篇文章将对 32-bit 和 64-bit 的调用约定进行更为深入的探讨。</p>
+<h2 id="0x01-单个参数">0x01 单个参数</h2>
+<a href="/pwn_assets/calling-conventions-one-param.zip" title="Download calling-conventions-one-param.zip" class="card-link" download="calling-conventions-one-param.zip"><span class="cl-backdrop" style="--cl-bg-url: url(/fixit.min.svg);"></span>
+    <span class="cl-content">
+      <span class="cl-text">
+        <span class="cl-title">calling-conventions-one-param.zip</span>
+        <span class="cl-meta">
+          <svg class="cl-icon-link" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.3 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.7 39.7c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.3 562.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5 0-306.1z" fill="#a9a9b3"></path><path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#a9a9b3"></path></svg>
+          <span class="cl-url">/pwn_assets/calling-conventions-one-param.zip</span>
+        </span>
+      </span><svg class="cl-icon-download" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><path d="M824.32 473.6c-15.36-2.56-25.6-15.36-25.6-30.72 0-112.64-71.68-217.6-179.2-250.88-148.48-46.08-289.28 38.4-332.8 166.4-2.56 10.24-12.8 17.92-23.04 20.48C143.36 401.92 51.2 509.44 51.2 637.44v2.56c0 115.2 97.28 204.8 209.92 204.8h524.8c102.4-2.56 184.32-84.48 184.32-186.88 2.56-89.6-61.44-163.84-145.92-184.32z m-273.92 225.28c-12.8 12.8-30.72 15.36-46.08 10.24H501.76c-5.12-2.56-10.24-5.12-15.36-10.24L366.08 578.56c-15.36-15.36-15.36-43.52 0-58.88 15.36-15.36 43.52-15.36 58.88 0l51.2 51.2V352.4608c0-23.04 17.92-40.96 40.96-40.96 23.04 0 40.96 17.92 40.96 40.96v218.4192l51.2-51.2c17.92-17.92 43.52-17.92 61.44 0 17.92 15.36 17.92 40.96 0 58.88l-120.32 120.32z" fill="#4FC089"></path></svg></span></a>
+<h3 id="1x01-源码">1x01 源码</h3>
+<p>我们先快速浏览一下源码：</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">vuln</span><span class="p">(</span><span class="kt">int</span> <span class="n">check</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">check</span> <span class="o">==</span> <span class="mh">0xdeadbeef</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Nice!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Not nice!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">vuln</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">vuln</span><span class="p">(</span><span class="mh">0xdeadc0de</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>分别运行 32-bit 和 64-bit 的 vuln，我们会得到相同的输出：</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Nice!
+</span></span><span class="line"><span class="cl">Not nice!</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="1x02-分析-vuln-32">1x02 分析 vuln-32</h3>
+<p>用 pwndbg 对其进行反汇编：</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ disass main
+</span></span><span class="line"><span class="cl">Dump of assembler code for function main:
+</span></span><span class="line"><span class="cl">   0x080491ac &lt;+0&gt;:	lea    ecx,[esp+0x4]
+</span></span><span class="line"><span class="cl">   0x080491b0 &lt;+4&gt;:	and    esp,0xfffffff0
+</span></span><span class="line"><span class="cl">   0x080491b3 &lt;+7&gt;:	push   DWORD PTR [ecx-0x4]
+</span></span><span class="line"><span class="cl">   0x080491b6 &lt;+10&gt;:	push   ebp
+</span></span><span class="line"><span class="cl">   0x080491b7 &lt;+11&gt;:	mov    ebp,esp
+</span></span><span class="line"><span class="cl">   0x080491b9 &lt;+13&gt;:	push   ecx
+</span></span><span class="line"><span class="cl">   0x080491ba &lt;+14&gt;:	sub    esp,0x4
+</span></span><span class="line"><span class="cl">   0x080491bd &lt;+17&gt;:	call   0x80491f4 &lt;__x86.get_pc_thunk.ax&gt;
+</span></span><span class="line"><span class="cl">   0x080491c2 &lt;+22&gt;:	add    eax,0x2e3e
+</span></span><span class="line"><span class="cl">   0x080491c7 &lt;+27&gt;:	sub    esp,0xc
+</span></span><span class="line"><span class="cl">   0x080491ca &lt;+30&gt;:	push   0xdeadbeef
+</span></span><span class="line"><span class="cl">   0x080491cf &lt;+35&gt;:	call   0x8049162 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">   0x080491d4 &lt;+40&gt;:	add    esp,0x10
+</span></span><span class="line"><span class="cl">   0x080491d7 &lt;+43&gt;:	sub    esp,0xc
+</span></span><span class="line"><span class="cl">   0x080491da &lt;+46&gt;:	push   0xdeadc0de
+</span></span><span class="line"><span class="cl">   0x080491df &lt;+51&gt;:	call   0x8049162 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">   0x080491e4 &lt;+56&gt;:	add    esp,0x10
+</span></span><span class="line"><span class="cl">   0x080491e7 &lt;+59&gt;:	mov    eax,0x0
+</span></span><span class="line"><span class="cl">   0x080491ec &lt;+64&gt;:	mov    ecx,DWORD PTR [ebp-0x4]
+</span></span><span class="line"><span class="cl">   0x080491ef &lt;+67&gt;:	leave
+</span></span><span class="line"><span class="cl">   0x080491f0 &lt;+68&gt;:	lea    esp,[ecx-0x4]
+</span></span><span class="line"><span class="cl">   0x080491f3 &lt;+71&gt;:	ret
+</span></span><span class="line"><span class="cl">End of assembler dump.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果我们仔细观察对 <code>vuln</code> 函数的调用，我们会看到一个 Pattern：</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">push 0xdeadbeef
+</span></span><span class="line"><span class="cl">call   0x8049162 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">push 0xdeadc0de
+</span></span><span class="line"><span class="cl">call   0x8049162 &lt;vuln&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在调用函数之前，我们实际上先将 <code>参数</code> 压入了栈。现在让我们来研究一下 <code>vuln</code> 函数。</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ b *0x08049162
+</span></span><span class="line"><span class="cl">$ r
+</span></span><span class="line"><span class="cl">Breakpoint 1, 0x08049166 in vuln ()
+</span></span><span class="line"><span class="cl">$ x/20wx $esp
+</span></span><span class="line"><span class="cl">0xffffd6cc:	0x080491d4	0xdeadbeef</span></span></code></pre></td></tr></table>
+</div>
+</div><p>第一个值是我之前的博客中提到的 <code>返回地址</code> ，而第二个值是 <code>参数</code> 。这是有道理的，
+因为返回地址在 <code>调用</code> 期间被压入栈，因此它应该位于栈顶。现在让我们反汇编 <code>vuln</code> ：</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Dump of assembler code for function vuln:
+</span></span><span class="line"><span class="cl">   0x08049162 &lt;+0&gt;:	push   ebp
+</span></span><span class="line"><span class="cl">   0x08049163 &lt;+1&gt;:	mov    ebp,esp
+</span></span><span class="line"><span class="cl">   0x08049165 &lt;+3&gt;:	push   ebx
+</span></span><span class="line"><span class="cl">   0x08049166 &lt;+4&gt;:	sub    esp,0x4
+</span></span><span class="line"><span class="cl">   0x08049169 &lt;+7&gt;:	call   0x80491f4 &lt;__x86.get_pc_thunk.ax&gt;
+</span></span><span class="line"><span class="cl">   0x0804916e &lt;+12&gt;:	add    eax,0x2e92
+</span></span><span class="line"><span class="cl">   0x08049173 &lt;+17&gt;:	cmp    DWORD PTR [ebp+0x8],0xdeadbeef
+</span></span><span class="line"><span class="cl">   0x0804917a &lt;+24&gt;:	jne    0x8049192 &lt;vuln+48&gt;
+</span></span><span class="line"><span class="cl">   0x0804917c &lt;+26&gt;:	sub    esp,0xc
+</span></span><span class="line"><span class="cl">   0x0804917f &lt;+29&gt;:	lea    edx,[eax-0x1ff8]
+</span></span><span class="line"><span class="cl">   0x08049185 &lt;+35&gt;:	push   edx
+</span></span><span class="line"><span class="cl">   0x08049186 &lt;+36&gt;:	mov    ebx,eax
+</span></span><span class="line"><span class="cl">   0x08049188 &lt;+38&gt;:	call   0x8049030 &lt;puts@plt&gt;
+</span></span><span class="line"><span class="cl">   0x0804918d &lt;+43&gt;:	add    esp,0x10
+</span></span><span class="line"><span class="cl">   0x08049190 &lt;+46&gt;:	jmp    0x80491a6 &lt;vuln+68&gt;
+</span></span><span class="line"><span class="cl">   0x08049192 &lt;+48&gt;:	sub    esp,0xc
+</span></span><span class="line"><span class="cl">   0x08049195 &lt;+51&gt;:	lea    edx,[eax-0x1ff2]
+</span></span><span class="line"><span class="cl">   0x0804919b &lt;+57&gt;:	push   edx
+</span></span><span class="line"><span class="cl">   0x0804919c &lt;+58&gt;:	mov    ebx,eax
+</span></span><span class="line"><span class="cl">   0x0804919e &lt;+60&gt;:	call   0x8049030 &lt;puts@plt&gt;
+</span></span><span class="line"><span class="cl">   0x080491a3 &lt;+65&gt;:	add    esp,0x10
+</span></span><span class="line"><span class="cl">   0x080491a6 &lt;+68&gt;:	nop
+</span></span><span class="line"><span class="cl">   0x080491a7 &lt;+69&gt;:	mov    ebx,DWORD PTR [ebp-0x4]
+</span></span><span class="line"><span class="cl">   0x080491aa &lt;+72&gt;:	leave
+</span></span><span class="line"><span class="cl">   0x080491ab &lt;+73&gt;:	ret
+</span></span><span class="line"><span class="cl">End of assembler dump.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在这里，我显示了该命令的完整输出。因为其中有很多内容都是相关的。我们发现，
+有一个地址为 <code>ebp+0x8</code> 的局部变量。后来，又将 <code>ebp+0x8</code> 与 <code>0xdeadbeef</code> 进行比较：</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cmp    DWORD PTR [ebp+0x8],0xdeadbeef</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因此可以分析出 <code>ebp+0x8</code> 就是我们的参数。</p>
+<p>现在我们知道，当有一个参数时，它会被压入栈，使栈看起来像：</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">return address        param_1</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="1x03-分析-vuln-64">1x03 分析 vuln-64</h3>
+<p>我们在这里再次反汇编 <code>main</code> ：</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Dump of assembler code for function main:
+</span></span><span class="line"><span class="cl">   0x0000000000401153 &lt;+0&gt;:	push   rbp
+</span></span><span class="line"><span class="cl">   0x0000000000401154 &lt;+1&gt;:	mov    rbp,rsp
+</span></span><span class="line"><span class="cl">   0x0000000000401157 &lt;+4&gt;:	mov    edi,0xdeadbeef
+</span></span><span class="line"><span class="cl">   0x000000000040115c &lt;+9&gt;:	call   0x401122 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">   0x0000000000401161 &lt;+14&gt;:	mov    edi,0xdeadc0de
+</span></span><span class="line"><span class="cl">   0x0000000000401166 &lt;+19&gt;:	call   0x401122 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">   0x000000000040116b &lt;+24&gt;:	mov    eax,0x0
+</span></span><span class="line"><span class="cl">   0x0000000000401170 &lt;+29&gt;:	pop    rbp
+</span></span><span class="line"><span class="cl">   0x0000000000401171 &lt;+30&gt;:	ret
+</span></span><span class="line"><span class="cl">End of assembler dump.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们发现 64-bit 和 32-bit 在传参上不一样了。正如我在这篇 <a href="https://www.cubeyond.net/32-bit-vs-64-bit/"target="_blank" rel="external nofollow noopener noreferrer">博客<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 中所说的，
+参数被移至 <code>rdi</code>（这里的反汇编中写的是 <code>edi</code> ，但 <code>edi</code> 只是 <code>rdi</code> 的低 32 bits
+寄存器。原因是我们传入的参数只有 32 bits 大小，所以改为 <code>EDI</code> 可以节省
+内存消耗）。如果我们再次中断 <code>vuln</code> ，我们可以使用以下命令检查 <code>rdi</code> ：</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ regs rdi</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition info open">
+    <div class="details-summary admonition-title">
+      <i class="icon fa-solid fa-info-circle fa-fw" aria-hidden="true"></i>信息<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+    </div>
+    <div class="details-content">
+      <div class="admonition-content">如果只使用 <code>regs</code> 则会显示所有寄存器。</div>
+    </div>
+  </div>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ b *0x000000000040115c
+</span></span><span class="line"><span class="cl">$ r
+</span></span><span class="line"><span class="cl">Breakpoint 1, 0x000000000040115c in main ()
+</span></span><span class="line"><span class="cl">$ regs rdi
+</span></span><span class="line"><span class="cl">*RDI  0xdeadbeef</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition info open">
+    <div class="details-summary admonition-title">
+      <i class="icon fa-solid fa-info-circle fa-fw" aria-hidden="true"></i>信息<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+    </div>
+    <div class="details-content">
+      <div class="admonition-content"><p>64-bit 程序中，寄存器用于存放参数。但返回地址仍然压入栈，并且在 ROP 中放置在
+函数地址之后。</p>
+<p><em>注：只有前六个参数才会分别保存在寄存器中，如果还有更多的参数的话则会保存在栈上。</em></p>
+</div>
+    </div>
+  </div>
+<h2 id="0x02-多个参数">0x02 多个参数</h2>
+<a href="/pwn_assets/calling-convention-multi-param.zip" title="Download calling-convention-multi-param.zip" class="card-link" download="calling-convention-multi-param.zip"><span class="cl-backdrop" style="--cl-bg-url: url(/fixit.min.svg);"></span>
+    <span class="cl-content">
+      <span class="cl-text">
+        <span class="cl-title">calling-convention-multi-param.zip</span>
+        <span class="cl-meta">
+          <svg class="cl-icon-link" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.3 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.7 39.7c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.3 562.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5 0-306.1z" fill="#a9a9b3"></path><path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#a9a9b3"></path></svg>
+          <span class="cl-url">/pwn_assets/calling-convention-multi-param.zip</span>
+        </span>
+      </span><svg class="cl-icon-download" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><path d="M824.32 473.6c-15.36-2.56-25.6-15.36-25.6-30.72 0-112.64-71.68-217.6-179.2-250.88-148.48-46.08-289.28 38.4-332.8 166.4-2.56 10.24-12.8 17.92-23.04 20.48C143.36 401.92 51.2 509.44 51.2 637.44v2.56c0 115.2 97.28 204.8 209.92 204.8h524.8c102.4-2.56 184.32-84.48 184.32-186.88 2.56-89.6-61.44-163.84-145.92-184.32z m-273.92 225.28c-12.8 12.8-30.72 15.36-46.08 10.24H501.76c-5.12-2.56-10.24-5.12-15.36-10.24L366.08 578.56c-15.36-15.36-15.36-43.52 0-58.88 15.36-15.36 43.52-15.36 58.88 0l51.2 51.2V352.4608c0-23.04 17.92-40.96 40.96-40.96 23.04 0 40.96 17.92 40.96 40.96v218.4192l51.2-51.2c17.92-17.92 43.52-17.92 61.44 0 17.92 15.36 17.92 40.96 0 58.88l-120.32 120.32z" fill="#4FC089"></path></svg></span></a>
+<h3 id="1x01-源码-1">1x01 源码</h3>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">vuln</span><span class="p">(</span><span class="kt">int</span> <span class="n">check</span><span class="p">,</span> <span class="kt">int</span> <span class="n">check2</span><span class="p">,</span> <span class="kt">int</span> <span class="n">check3</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">check</span> <span class="o">==</span> <span class="mh">0xdeadbeef</span> <span class="o">&amp;&amp;</span> <span class="n">check2</span> <span class="o">==</span> <span class="mh">0xdeadc0de</span> <span class="o">&amp;&amp;</span> <span class="n">check3</span> <span class="o">==</span> <span class="mh">0xc0ded00d</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Nice!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Not nice!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">vuln</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">,</span> <span class="mh">0xdeadc0de</span><span class="p">,</span> <span class="mh">0xc0ded00d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">vuln</span><span class="p">(</span><span class="mh">0xdeadc0de</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">,</span> <span class="mh">0xabcdef10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="1x02-分析-vuln-32-1">1x02 分析 vuln-32</h3>
+<p>由于我们之前已经看到了几乎相同的二进制文件的完整反汇编，因此在这里我只会列出
+重要的部分：</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">0x080491dd &lt;+30&gt;:	push   0xc0ded00d
+</span></span><span class="line"><span class="cl">0x080491e2 &lt;+35&gt;:	push   0xdeadc0de
+</span></span><span class="line"><span class="cl">0x080491e7 &lt;+40&gt;:	push   0xdeadbeef
+</span></span><span class="line"><span class="cl">0x080491ec &lt;+45&gt;:	call   0x8049162 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">0x080491f7 &lt;+56&gt;:	push   0xabcdef10
+</span></span><span class="line"><span class="cl">0x080491fc &lt;+61&gt;:	push   0x12345678
+</span></span><span class="line"><span class="cl">0x08049201 &lt;+66&gt;:	push   0xdeadc0de
+</span></span><span class="line"><span class="cl">0x08049206 &lt;+71&gt;:	call   0x8049162 &lt;vuln&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们发现 <code>压栈</code> 和 <code>传参</code> 顺序是相反的。这是因为取参的时候是从低地址向高地址取参，
+而先入栈的在高地址，正好符合了取参从低向高的规则。</p>
+<div class="details admonition info open">
+    <div class="details-summary admonition-title">
+      <i class="icon fa-solid fa-info-circle fa-fw" aria-hidden="true"></i>信息<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+    </div>
+    <div class="details-content">
+      <div class="admonition-content"><p>大多数计算机系统结构中，栈是一种后进先出（Last In First Out，LIFO）的
+数据结构。当程序调用一个函数时，函数的参数被压入栈中，而函数内部则可以
+按照相反的顺序逐个弹出这些参数进行处理。这种设计有几个原因：</p>
+<ol>
+<li>便于管理栈指针：压栈和出栈操作可以通过简单的栈指针操作来实现，无需
+复杂的数据重排。这样可以减小指令的数量和复杂度，提高执行效率。</li>
+<li>一致性：使用相同的栈结构来处理参数和局部变量可以简化函数调用和返回
+的实现，使得代码更加一致和可维护。</li>
+<li>节省存储空间：压栈和出栈操作可以在相对较小的内存区域进行，不需要预留
+很大的内存来存储参数，这有助于节省内存空间。</li>
+</ol>
+<p>举个例子：如果一个函数有三个参数：<code>a</code>、<code>b</code> 和 <code>c</code> ，调用函数时的顺序为 <code>func(c, b, a)</code> ，
+则在栈中的存储顺序为 <code>push a</code> ，<code>push b</code> ，<code>push c</code> ，而在函数内部获取
+参数的顺序为从栈顶依次弹出 <code>pop c</code>，<code>pop b</code>，<code>pop a</code>。</p>
+<p>虽然压栈和实际程序传参的顺序相反，但这种细节是由编译器和计算机体系结构
+来处理的，因此我们无需过多考虑。编译器会生成适当的指令来正确处理函数
+参数的压栈和出栈操作，以确保函数调用的正确执行。</p>
+</div>
+    </div>
+  </div>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ b *0x080491ec
+</span></span><span class="line"><span class="cl">$ r
+</span></span><span class="line"><span class="cl">Breakpoint 1, 0x080491ec in main ()
+</span></span><span class="line"><span class="cl">$ s
+</span></span><span class="line"><span class="cl">$ x/20wx $esp
+</span></span><span class="line"><span class="cl">0xffffd6bc:	0x080491f1	0xdeadbeef	0xdeadc0de	0xc0ded00d</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因此，如何将更多参数放置在栈上就变得非常清楚了：</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">return address        param1        param2        param3        [...]        paramN</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="1x03-分析-vuln-64-1">1x03 分析 vuln-64</h3>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mov    edx,0xc0ded00d
+</span></span><span class="line"><span class="cl">mov    esi,0xdeadc0de
+</span></span><span class="line"><span class="cl">mov    edi,0xdeadbeef
+</span></span><span class="line"><span class="cl">call   0x401122 &lt;vuln&gt;
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">mov    edx,0xabcdef10
+</span></span><span class="line"><span class="cl">mov    esi,0x12345678
+</span></span><span class="line"><span class="cl">mov    edi,0xdeadc0de
+</span></span><span class="line"><span class="cl">call   0x401122 &lt;vuln&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同理，根据上面的调试步骤查看寄存器内容，我们可以发现：除了 <code>rdi</code> 之外，
+我们还把参数压到了 <code>rsi</code> 和 <code>rdx</code> 。</p>
+<h2 id="0x03-更大的-64-bits-值">0x03 更大的 64-bits 值</h2>
+<p>只是为了表明实际上最终使用的是 <code>rdi</code> 而不是 <code>edi</code> ，我将更改原始的单参数
+代码以使用更大的数字：</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">vuln</span><span class="p">(</span><span class="kt">long</span> <span class="n">check</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">check</span> <span class="o">==</span> <span class="mh">0xdeadbeefc0dedd00d</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Nice!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">vuln</span><span class="p">(</span><span class="mh">0xdeadbeefc0dedd00d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果你反汇编 <code>main</code> ，你可以看到它被反汇编为：</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">movabs rax,0xeadbeefc0dedd00d
+</span></span><span class="line"><span class="cl">mov    rdi,rax
+</span></span><span class="line"><span class="cl">call   0x401126 &lt;vuln&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition info open">
+    <div class="details-summary admonition-title">
+      <i class="icon fa-solid fa-info-circle fa-fw" aria-hidden="true"></i>信息<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+    </div>
+    <div class="details-content">
+      <div class="admonition-content"><code>movabs</code> 用于将 <code>mov</code> 指令编码为 64-bit 指令，可将其视为 <code>mov</code> 。</div>
+    </div>
+  </div></div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2023-08-09 10:16:36">更新于 2023-08-09&nbsp;</span>
+      </div></div>
+    <div class="post-info-line">
+      <div class="post-info-md"><span><a href="/calling-conventions/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+      <div class="post-info-share">
+        <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://www.cubeyond.net/calling-conventions/" data-title="调用约定" data-via="CuB3y0nd" data-hashtags="PWN,Stack"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://www.cubeyond.net/calling-conventions/" data-hashtag="PWN"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://www.cubeyond.net/calling-conventions/" data-title="调用约定"><i class="fa-brands fa-hacker-news fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://www.cubeyond.net/calling-conventions/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/pwn/' class="post-tag">PWN</a><a href='/tags/stack/' class="post-tag">Stack</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/return-oriented-programming/" class="post-nav-item" rel="prev" title="面向返回编程简介"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>面向返回编程简介</a>
+      <a href="/divisibility-factors-and-euclids-algorithms/" class="post-nav-item" rel="next" title="可除性，因数和欧几里得算法">可除性，因数和欧几里得算法<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="CuB3y0nd/CuB3y0nd.github.io"
+            data-repo-id="R_kgDOKDbydA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOKDbydM4CYYS0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="1"
+            data-input-position="top"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered order-1">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.116.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.2.18"><img class="fixit-icon" src="/fixit.min.svg" alt="FixIt logo" />&nbsp;FixIt</a>
+        </div><div class="footer-line copyright order-2" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2022 - 2023</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">CuB3y0nd</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div><div class="footer-line statistics order-first"><span class="site-time" title='网站运行中…'><i class="fa-solid fa-heartbeat fa-fw animate-icon" aria-hidden="true"></i><span class="run-times ms-1">网站运行中…</span></span></div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><a href="https://github.com/CuB3y0nd/CuB3y0nd.github.io" title="View source on GitHub"target="_blank" rel="external nofollow" class="github-corner right d-none-mobile"><svg viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;--bg-progress: black;--bg-progress-dark: white;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.cd0d0b6e50ff01ff2f3a9a70d7cfb66a7c6cb9acf7a566325568be6d3bd31fc4.css" integrity="sha256-zQ0LblD/Af8vOppw18&#43;2anxsuaz3pWYyVWi&#43;bTvTH8Q="><link rel="stylesheet" href="/lib/pace/themes/black/pace-theme-minimal.1412d33acb0e8c099edcf3734458ded6efefafeca31e2df79e36737c6ad0c281.css" integrity="sha256-FBLTOssOjAme3PNzRFje1u/vr&#43;yjHi33njZzfGrQwoE="><script src="/lib/autocomplete/autocomplete.min.ae2da1bd62c6469ee27770ad1cddf2e8296d8a7f6d85b091463e5200c5e320af.js" integrity="sha256-ri2hvWLGRp7id3CtHN3y6Cltin9thbCRRj5SAMXjIK8=" defer></script><script src="/lib/fuse/fuse.min.c57339c3fa16b1d69d9a6b46749a8139ef8d4fc9bbfe48144ff897aa7d4222ec.js" integrity="sha256-xXM5w/oWsdadmmtGdJqBOe+NT8m7/kgUT/iXqn1CIuw=" defer></script><script src="/lib/sharer/sharer.min.ba5171a78670b031914e623431a33a3d73c1ea9897e552ba73bc2c2da7c777b9.js" integrity="sha256-ulFxp4ZwsDGRTmI0MaM6PXPB6piX5VK6c7wsLafHd7k=" async defer></script><script src="/lib/typeit/index.umd.16f3fa3374a7eea31f19672293edc98326413002dea74b8c413a74f1b7e4f1cf.js" integrity="sha256-FvP6M3Sn7qMfGWcik+3JgyZBMALep0uMQTp08bfk8c8=" defer></script><script src="/lib/cookieconsent/cookieconsent.min.e55842a856a6d829feca3c3ad736c136b6c7549e9247274f78aa296259e06e24.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" defer></script><script src="/lib/pace/pace.min.82a77b6138e0fc1b5fa964b0b093af9dd97407173c8052262c4917413f3eaa3d.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark_dimmed","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":{"title":"source.c"},"id-12":{"title":"source.c"},"id-17":{"title":"source.c"},"typeit-header-subtitle-desktop":"To learn and record!","typeit-header-subtitle-mobile":"To learn and record!"},"search":{"distance":100,"findAllMatches":true,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":true},"siteTime":"2022-10-01T12:00:00+08:00","typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"typeit-header-subtitle-desktop":["typeit-header-subtitle-desktop"],"typeit-header-subtitle-mobile":["typeit-header-subtitle-mobile"]},"duration":-1,"loop":false,"speed":100}};</script><script src="/js/theme.min.3c3127b3e9be8812325146e25c97aefeb64c380012799edc48d3db387b9b2fc8.js" integrity="sha256-PDEns+m+iBIyUUbiXJeu/rZMOAASeZ7cSNPbOHubL8g=" defer></script></body>
+</html>
