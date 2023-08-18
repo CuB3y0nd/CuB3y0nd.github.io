@@ -250,7 +250,7 @@ payload += p32(0x080491c3)
 将溢出 Padding 设置为字节字符串：
 
 ```python
-payload = b'A' * 52 # 注意 "b"
+payload = b'A' * 52  # 注意 "b"
 ```
 
 否则你会得到一个这样的报错：

