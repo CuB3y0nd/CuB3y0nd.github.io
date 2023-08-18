@@ -242,7 +242,7 @@ buildFuture = true
 
   # FixIt 0.2.18 | NEW Breadcrumb config
   [params.breadcrumb]
-    enable = true
+    enable = false
     sticky = true
     showHome = false
 
