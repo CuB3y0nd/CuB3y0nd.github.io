@@ -251,7 +251,7 @@ buildFuture = true
     enable = true
     # FixIt 0.2.17 | CHANGED Custom content (HTML format is supported)
     # For advanced use, see parameter `params.customFilePath.footer`
-    custom = '<span>本网站由</span><a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" target="_blank"><img src="https://s1.ax1x.com/2023/08/19/pP3foCj.png" align="absmiddle" width="40px" height="20px" alt="又拍云" /></a><span>提供 CDN 加速/云存储服务</span>'
+    custom = '<a target="_blank" href="http://www.freecdn.pw/?zzwz" title="免费云加速（FreeCDN），为您免费提供网站加速和网站防御（DDOS、CC攻击）" alt="免费云加速（FreeCDN），为您免费提供网站加速和网站防御（DDOS、CC攻击）">本站由免费云加速（FreeCDN）提供网站加速和攻击防御服务</a>'
     # FixIt 0.2.0 | NEW whether to show Hugo and theme info
     hugo = true
     # FixIt 0.2.0 | NEW whether to show copyright info
