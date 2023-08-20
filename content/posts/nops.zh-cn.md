@@ -75,7 +75,7 @@ NOP，无操作（**N**o **OP**eration）指令的作用正如其名：什么也
 NOP 指令是 `XCHG EAX, EAX` 的别名（32 bit 系统中），它实际上什么也不做。你可以在这个
 [问题](https://stackoverflow.com/questions/25008772/whats-the-difference-between-the-x86-nop-and-fnop-instructions) 上阅读更多相关信息。
 
-## 0x01 更新 EXP
+## 0x01 更新 Exploit
 
 现在可以对我们的 EXP 进行一些细微的更改，以完成两件事：
 
@@ -121,7 +121,7 @@ p.interactive()
 nop = asm(shellcraft.nop())
 ```
 
-## 0x02 最终 EXP
+## 0x02 最终 Exploit
 
 ```python {title="exp.py"}
 from pwn import *

@@ -138,7 +138,7 @@ Found at offset 312
 
 得到溢出 Padding 是 312 字节。
 
-## 0x04 编写 EXP
+## 0x04 编写 Exploit
 
 为了使 shellcode 正确，我们将把 `context.binary` 设置为我们的二进制文件；
 这会获取诸如架构、操作系统和位数之类的东西，并使 pwntools 能够为我们提供
@@ -202,7 +202,7 @@ $ whoami
 cub3y0nd
 ```
 
-## 0x05 最终 EXP
+## 0x05 最终 Exploit
 
 ```python {title="exp.py"}
 from pwn import *

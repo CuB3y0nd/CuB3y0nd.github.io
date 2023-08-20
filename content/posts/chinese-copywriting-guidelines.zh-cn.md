@@ -43,15 +43,13 @@ repost:
 
 ## 空格
 
-{{<admonition type="quote" title="">}}
+{{<center-quote>}}
 
 「有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，
 有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其余三成的人最后只能把遗产
-留给自己的猫。毕竟爱情跟书写都需要适时地留白。
+留给自己的猫。毕竟爱情跟书写都需要适时地留白。</br>与大家共勉之。」——[vinta/paranoid-auto-spacing](https://github.com/vinta/pangu.js)
 
-与大家共勉之。」——[vinta/paranoid-auto-spacing](https://github.com/vinta/pangu.js)
-
-{{</admonition>}}
+{{</center-quote>}}
 
 ### 中英文之间需要增加空格
 
