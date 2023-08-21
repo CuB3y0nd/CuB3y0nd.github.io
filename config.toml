@@ -165,7 +165,7 @@ buildFuture = true
   # site description
   description = "CuB3y0nd's Blog"
   # site keywords
-  keywords = ["CuB3y0nd", "PWN", "BinaryEXP", "Binary Exploitation", "Reverse Engineering", "RCE", "Buffer Overflow", "ROP", "ROP Emporium", "Crypto", "Cryptograhpy"]
+  keywords = ["CuB3y0nd", "Cubeyond", "CTF", "WriteUp", "PWN", "BinaryEXP", "Binary Exploitation", "Reverse Engineering", "RCE", "Buffer Overflow", "ROP", "ROP Emporium", "Crypto", "Cryptograhpy"]
   # site default theme ["light", "dark", "auto"]
   defaultTheme = "auto"
   # public git repo url only then enableGitInfo is true
@@ -495,7 +495,7 @@ buildFuture = true
 
     # FixIt 0.2.15 | NEW Repost config
     [params.page.repost]
-      enable = false
+      enable = true
       url = ""
     # FixIt 0.2.0 | NEW Table of the contents config
     [params.page.toc]
@@ -813,9 +813,9 @@ buildFuture = true
 
   # FixIt 0.2.12 | NEW Busuanzi count
   [params.ibruce]
-    enable = false
+    enable = true
     # Enable in post meta
-    enablePost = false
+    enablePost = true
 
   # Site verification code config for Google/Bing/Yandex/Pinterest/Baidu/360/Sogou
   [params.verification]
