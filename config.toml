@@ -75,6 +75,15 @@ buildFuture = true
       weight = 4
       [languages.zh-cn.menu.main.params]
         icon = "fa-solid fa-circle-info"
+    [[languages.zh-cn.menu.main]]
+      identifier = "friends"
+      pre = ""
+      name = "友链"
+      url = "/friends/"
+      title = ""
+      weight = 5
+      [[languages.zh-cn.menu.params]]
+        icon = "fa-solid fa-users"
 
   [languages.en]
     weight = 2
@@ -132,7 +141,15 @@ buildFuture = true
       weight = 4
       [languages.en.menu.main.params]
         icon = "fa-solid fa-circle-info"
-
+    [[languages.en.menu.main]]
+      identifier = "friends"
+      pre = ""
+      name = "Friends"
+      url = "/friends/"
+      title = ""
+      weight = 5
+      [[languages.en.menu.params]]
+        icon = "fa-solid fa-users"
 
 # -------------------------------------------------------------------------------------
 # Theme Core Configuration
@@ -348,7 +365,7 @@ buildFuture = true
   [params.social]
     GitHub = "CuB3y0nd"
     Linkedin = ""
-    Twitter = "CuB3y0nd"
+    Twitter = ""
     Instagram = ""
     Facebook = ""
     Telegram = "CuB3y0nd"
@@ -365,7 +382,7 @@ buildFuture = true
     Codepen = ""
     FreeCodeCamp = ""
     Bitbucket = ""
-    Stackoverflow = "22372865"
+    Stackoverflow = ""
     Weibo = ""
     Odnoklassniki = ""
     VK = ""
