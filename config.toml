@@ -816,10 +816,10 @@ buildFuture = true
 
   # FixIt 0.2.0 | NEW Analytics config
   [params.analytics]
-    enable = false
+    enable = true
     # Google Analytics
     [params.analytics.google]
-      id = ""
+      id = "G-63QJ5Q92N7"
       # whether to anonymize IP
       anonymizeIP = true
     # Fathom Analytics
@@ -944,7 +944,7 @@ buildFuture = true
 [author]
   name = "CuB3y0nd"
   email = "root@cubeyond.net"
-  link = ""
+  link = "https://www.cubeyond.net/"
   avatar = "/images/avatar.jpg"
 
 [sitemap]
