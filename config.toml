@@ -77,6 +77,7 @@ buildFuture = true
         icon = "fa-solid fa-circle-info"
     [[languages.zh-cn.menu.main]]
       identifier = "friends"
+      parent = "about"
       pre = ""
       post = ""
       name = "友链"
@@ -144,6 +145,7 @@ buildFuture = true
         icon = "fa-solid fa-circle-info"
     [[languages.en.menu.main]]
       identifier = "friends"
+      parent = "about"
       pre = ""
       name = "Friends"
       url = "/friends/"
