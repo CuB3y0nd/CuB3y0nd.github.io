@@ -78,11 +78,12 @@ buildFuture = true
     [[languages.zh-cn.menu.main]]
       identifier = "friends"
       pre = ""
+      post = ""
       name = "友链"
       url = "/friends/"
       title = ""
       weight = 5
-      [[languages.zh-cn.menu.params]]
+      [languages.zh-cn.menu.main.params]
         icon = "fa-solid fa-users"
 
   [languages.en]
@@ -148,7 +149,7 @@ buildFuture = true
       url = "/friends/"
       title = ""
       weight = 5
-      [[languages.en.menu.params]]
+      [languages.en.menu.main.params]
         icon = "fa-solid fa-users"
 
 # -------------------------------------------------------------------------------------
