@@ -25,7 +25,7 @@ comment: true
 
 {{<admonition type="info">}}
 
-1. 您可以通过 [创建 PR](https://github.com/CuB3y0nd/CuB3y0nd.github.io/pulls) 或在评论区按照上述的指定格式进行提交友链。
+1. 您可以通过 [创建 PR :(fa-solid fa-code-pull-request):](https://github.com/CuB3y0nd/CuB3y0nd.github.io/pulls) 或在评论区按照上述的指定格式进行提交友链。
 2. 那些不尊重他人劳动成果、无出处转载、有恶意行为的网站请勿前来交流。
 
 <center>

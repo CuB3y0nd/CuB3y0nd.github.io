@@ -25,7 +25,7 @@ comment: true
 
 {{<admonition type="info">}}
 
-1. If you want to exchange link, please create [PR](https://github.com/CuB3y0nd/CuB3y0nd.github.io/pulls) or leave a comment in the above format. (personal non-commercial blogs / websites only)
+1. If you want to exchange link, please create [PR :(fa-solid fa-code-pull-request):](https://github.com/CuB3y0nd/CuB3y0nd.github.io/pulls) or leave a comment in the above format. (personal non-commercial blogs / websites only)
 2. Those websites that do not respect other people's labor achievements, reprint without source, or malicious acts, please do not come to exchange.
 
 <center>:(fa-solid fa-exclamation-triangle): Website failure, stop maintenance and improper content may be unlinked! :(fa-solid fa-exclamation-triangle):</center>
