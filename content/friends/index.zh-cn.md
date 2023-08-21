@@ -27,7 +27,11 @@ comment: true
 
 1. 您可以通过 [创建 PR](https://github.com/CuB3y0nd/CuB3y0nd.github.io/pulls) 或在评论区按照上述的指定格式进行提交友链。
 2. 那些不尊重他人劳动成果、无出处转载、有恶意行为的网站请勿前来交流。
-<center>:(fa-solid fa-exclamation-triangle): 网站失效、停止维护、不当内容都可能被取消链接！:(fa-solid fa-exclamation-triangle):</center>
+
+<center>
+  :(fa-solid fa-exclamation-triangle): 网站失效、停止维护、不当内容都可能被取消链接！:(fa-solid fa-exclamation-triangle):</br>
+  仅限个人非商业博客/网站
+</center>
 
 {{</admonition>}}
 

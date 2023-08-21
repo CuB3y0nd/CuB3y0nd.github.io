@@ -1,5 +1,5 @@
 ---
-title: 友链
+title: Friends
 subtitle:
 type: friends
 date: 2023-08-21T21:29:27+08:00
@@ -8,13 +8,13 @@ keywords:
   - 'Hugo FixIt'
   - 'CuB3y0nd'
   - 'Cubeyond'
-  - 友情链接
+  - 'Friends'
 comment: true
 ---
 
 ---
 
-## 基本信息
+## Illustrate
 
 ```yaml
 - nickname: CuB3y0nd
@@ -23,12 +23,12 @@ comment: true
   description: CuB3y0nd's Blog
 ```
 
-## 温馨提示
+{{<admonition type="info">}}
 
-{{< admonition info "Notice" true >}}
+1. If you want to exchange link, please create [PR](https://github.com/CuB3y0nd/CuB3y0nd.github.io/pulls) or leave a comment in the above format. (personal non-commercial blogs / websites only)
+2. Those websites that do not respect other people's labor achievements, reprint without source, or malicious acts, please do not come to exchange.
 
-1. If you want to exchange link, please leave a comment in the above format. (personal non-commercial blogs / websites only)
-2. :(fa-solid fa-exclamation-triangle): Website failure, stop maintenance and improper content may be unlinked!
-3. Those websites that do not respect other people's labor achievements, reprint without source, or malicious acts, please do not come to exchange.
+<center>:(fa-solid fa-exclamation-triangle): Website failure, stop maintenance and improper content may be unlinked! :(fa-solid fa-exclamation-triangle):</center>
 
-{{< /admonition >}}
+{{</admonition>}}
+
