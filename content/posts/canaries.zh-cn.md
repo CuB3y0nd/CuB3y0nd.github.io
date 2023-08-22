@@ -28,7 +28,7 @@ resources:
     src: featured-image-preview.jpg
 toc: true
 math: false
-lightgallery: true
+lightgallery: false
 password:
 message:
 repost:
