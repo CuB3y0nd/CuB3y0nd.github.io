@@ -1,6 +1,6 @@
 ---
-title: 绕过 PIE
-subtitle: 使用格式化字符串
+title: 通过格式化字符串绕过 PIE
+subtitle: 使用格式化字符串绕过 PIE
 date: 2023-08-22T11:38:27+08:00
 draft: false
 author:
