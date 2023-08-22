@@ -813,9 +813,9 @@ buildFuture = true
 
   # FixIt 0.2.12 | NEW Busuanzi count
   [params.ibruce]
-    enable = true
+    enable = false
     # Enable in post meta
-    enablePost = true
+    enablePost = false
 
   # Site verification code config for Google/Bing/Yandex/Pinterest/Baidu/360/Sogou
   [params.verification]
