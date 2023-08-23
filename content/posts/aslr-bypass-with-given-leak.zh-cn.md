@@ -44,7 +44,7 @@ repost:
 
 {{< link href="/pwn_assets/aslr.zip" content="aslr.zip" title="Download aslr.zip" download="aslr.zip" card=true >}}
 
-```c
+```c {title="source.c"}
 #include <stdio.h>
 #include <stdlib.h>
 
