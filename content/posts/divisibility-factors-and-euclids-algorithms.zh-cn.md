@@ -15,6 +15,9 @@ comment: true
 weight: 0
 tags:
   - Crypto
+  - Algebra
+  - Mathematics
+  - Number Theory
 categories:
   - Cryptography
 hiddenFromHomePage: false
