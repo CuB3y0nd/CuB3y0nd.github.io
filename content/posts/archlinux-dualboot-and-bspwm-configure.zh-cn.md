@@ -315,6 +315,21 @@ fcitx5 输入法（不需要中文输入的可以不装）：
 
 蓝牙（可选）：`bluez`
 
+下面是一些我个人常用的软件：
+
+```
+bat dust duf procs btop exa zoxide ripgrep fd httpie hyperfine
+bleachbit gimp gcolor3 simplescreenrecorder
+thunar thunar-archive-plugin tumbler xarchiver
+ueberzug viewnior zathura zathura-pdf-poppler
+pacman-contrib copyq yt-dlp transmission-gtk
+papirus-icon-theme ttf-joypixels terminus-font grsync
+ffmpeg ffmpegthumbnailer aom libde265 x265 x264 libmpeg2 xvidcore libtheora libvpx sdl
+jasper openjpeg2 libwebp webp-pixbuf-loader
+unarchiver lha lrzip lzip p7zip lbzip2 arj lzop cpio unrar unzip zip unarj xdg-utils
+xorg-server xorg-xinput xorg-xsetroot zramswap qogir-icon-theme
+```
+
 ```bash
 pacstrap -i /mnt base base-devel linux-zen linux-zen-headers linux-firmware amd-ucode xorg-xinit xorg-server fcitx5 fcitx5-chinese-addons fcitx5-configtool fcitx5-gtk fcitx5-material-color fcitx5-pinyin-zhwiki sudo neofetch neovim git wget proxychains btop iwd networkmanager alsa-utils e2fsprogs ntfs-3g bash-completion pipewire pipewire-pulse pipewire-alsa pipewire-jack adobe-source-han-serif-cn-fonts wqy-zenhei noto-fonts-cjk noto-fonts-emoji noto-fonts-extra bluez
 ```
