@@ -318,7 +318,7 @@ fcitx5 输入法（不需要中文输入的可以不装）：
 下面是一些我个人常用的软件：
 
 ```
-bat dust duf procs btop exa ripgrep fd httpie hyperfine
+bat dust duf procs btop exa ripgrep fd fzf httpie hyperfine
 bleachbit gimp gcolor3 simplescreenrecorder
 thunar thunar-archive-plugin tumbler xarchiver
 ueberzug viewnior zathura zathura-pdf-poppler
