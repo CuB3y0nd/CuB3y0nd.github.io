@@ -53,7 +53,7 @@ Windows 版本的 NX 是 DEP（**D**ata **E**xecution **P**revention），数据
 
 {{</admonition>}}
 
-## 检查 NX
+#### 检查 NX
 
 你可以使用 `checksec` 来检查 NX 的状态：
 
