@@ -85,7 +85,7 @@ $ b *0x080491bb
 ```
 
 `b` 表示 **b**reakpoint，设置断点。断点的作用是在到达时暂停程序的执行以便运行
-其它命令。现在我们使用 `r` 代表 **r**un， 运行程序。这将在遇到我们设置的断点时暂停。
+其它命令。现在我们使用 `r` ，**r**un 运行程序。这将在遇到我们设置的断点时暂停。
 
 {{<admonition type="info">}}
 
@@ -118,7 +118,7 @@ $ x/20wx $esp
 
 ```
 $ x/20wx $esp
-0xffffd73c:	0x080491c0
+0xffffd740:	0x080491c0
 [...]
 ```
 
@@ -163,7 +163,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 ```
 $ x/20wx 0xffffd73c
-0xffffd73c:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffd740:	0x41414141	0x41414141	0x41414141	0x41414141
 [...]
 ```
 
@@ -174,7 +174,7 @@ $ x/20wx 0xffffd73c
 指令本来应该压入 `eip` 中的值被覆盖，不会在前面的函数中执行，而是执行了
 `0x41414141` 。
 
-我们可以用 `s` 确认：
+我们可以用 `regs` 确认：
 
 ```
 *EIP  0x41414141 ('AAAA')
