@@ -26,24 +26,16 @@ buildFuture = true
     hasCJKLanguage = true
     [[languages.zh-cn.menu.main]]
       identifier = "posts"
-      # you can add extra information before the name (HTML format is supported), such as icons
       pre = ""
-      # you can add extra information after the name (HTML format is supported), such as icons
       post = ""
       name = "文章"
       url = "/posts/"
-      # title will be shown when you hover on this menu link
       title = ""
       weight = 1
-      # FixIt 0.2.14 | NEW add user-defined content to menu items
       [languages.zh-cn.menu.main.params]
-        # add css class to a specific menu item
         class = ""
-        # whether set as a draft menu item whose function is similar to a draft post/page
         draft = false
-        # FixIt 0.2.16 | NEW add fontawesome icon to a specific menu item
         icon = "fa-solid fa-archive"
-        # FixIt 0.2.16 | NEW set menu item type, optional values: ["mobile", "desktop"]
         type = ""
     [[languages.zh-cn.menu.main]]
       identifier = "categories"
@@ -76,6 +68,17 @@ buildFuture = true
       [languages.zh-cn.menu.main.params]
         icon = "fa-solid fa-circle-info"
     [[languages.zh-cn.menu.main]]
+      identifier = "life"
+      parent = "about"
+      pre = ""
+      post = ""
+      name = "人生"
+      url = "/life/"
+      title = ""
+      weight = 5
+      [languages.zh-cn.menu.main.params]
+        icon = "fa-solid fa-feather"
+    [[languages.zh-cn.menu.main]]
       identifier = "friends"
       parent = "about"
       pre = ""
@@ -83,7 +86,7 @@ buildFuture = true
       name = "友链"
       url = "/friends/"
       title = ""
-      weight = 5
+      weight = 6
       [languages.zh-cn.menu.main.params]
         icon = "fa-solid fa-users"
 
@@ -94,24 +97,16 @@ buildFuture = true
     languageName = "English"
     [[languages.en.menu.main]]
       identifier = "posts"
-      # you can add extra information before the name (HTML format is supported), such as icons
       pre = ""
-      # you can add extra information after the name (HTML format is supported), such as icons
       post = ""
       name = "Posts"
       url = "/posts/"
-      # title will be shown when you hover on this menu link
       title = ""
       weight = 1
-      # FixIt 0.2.14 | NEW add user-defined content to menu items
       [languages.en.menu.main.params]
-        # add css class to a specific menu item
         class = ""
-        # whether set as a draft menu item whose function is similar to a draft post/page
         draft = false
-        # FixIt 0.2.16 | NEW add fontawesome icon to a specific menu item
         icon = "fa-solid fa-archive"
-        # FixIt 0.2.16 | NEW set menu item type, optional values: ["mobile", "desktop"]
         type = ""
     [[languages.en.menu.main]]
       identifier = "categories"
@@ -144,13 +139,24 @@ buildFuture = true
       [languages.en.menu.main.params]
         icon = "fa-solid fa-circle-info"
     [[languages.en.menu.main]]
+      identifier = "life"
+      parent = "about"
+      pre = ""
+      post = ""
+      name = "Life"
+      url = "/life/"
+      title = ""
+      weight = 5
+      [languages.en.menu.main.params]
+        icon = "fa-solid fa-feather"
+    [[languages.en.menu.main]]
       identifier = "friends"
       parent = "about"
       pre = ""
       name = "Friends"
       url = "/friends/"
       title = ""
-      weight = 5
+      weight = 6
       [languages.en.menu.main.params]
         icon = "fa-solid fa-users"
 
