@@ -1,6 +1,6 @@
 ---
 title: 做好自己
-subtitle: 我向往我还未曾踏入的未知世界
+subtitle: 我向往我还未曾踏入的未知的世界
 date: 2023-09-01T16:46:09+08:00
 description:
 keywords:
