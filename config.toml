@@ -61,7 +61,7 @@ buildFuture = true
       identifier = "about"
       pre = ""
       post = ""
-      name = "关于"
+      name = "關於"
       url = "/about/"
       title = ""
       weight = 4
@@ -357,7 +357,7 @@ buildFuture = true
       # FixIt 0.2.7 | CHANGED title shown in home page (HTML format is supported)
       title = "路虽远，行则将至"
       # subtitle shown in home page
-      subtitle = "Patience Ensures Victory."
+      subtitle = "Everything is figureoutable"
       # whether to use typeit animation for subtitle
       typeit = true
       # whether to show social links
