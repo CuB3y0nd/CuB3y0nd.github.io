@@ -10,7 +10,7 @@ draft: false
 {{< style "min-height: 230px;" >}}
 {{< typeit code=java >}}
 /**
- * The original intention of building a blog is not to show off what you know, but to record ignorance.
+ * The original intention of building a blog is not to felx what you know, but to record ignorance.
  * @since 2022-10-01 12:00:00
  */
 
